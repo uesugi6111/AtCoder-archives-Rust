@@ -1,2 +1,3 @@
 # AtCoder-archives-Rust
-AtCoder 提出コードを残す(Rust)(手動)
+AtCoder 提出コードarchive(Rust)(手動)
+
