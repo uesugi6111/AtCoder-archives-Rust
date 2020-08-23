@@ -22,16 +22,16 @@ fn main() {
             c.remove(0);
         }
 
-        if a.len() == 0 {
-            println!("{}", "A");
+        if a.is_empty() {
+            println!("A");
             break;
         }
-        if b.len() == 0 {
-            println!("{}", "B");
+        if b.is_empty() {
+            println!("B");
             break;
         }
-        if c.len() == 0 {
-            println!("{}", "C");
+        if c.is_empty() {
+            println!("C");
             break;
         }
     }

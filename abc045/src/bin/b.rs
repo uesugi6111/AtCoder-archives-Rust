@@ -12,24 +12,24 @@ fn main() {
     a.remove(0);
     loop {
         if buff == 'a' {
-            if a.len() == 0 {
-                println!("{}", "A");
+            if a.is_empty() {
+                println!("A");
                 break;
             }
             buff = a[0];
 
             a.remove(0);
         } else if buff == 'b' {
-            if b.len() == 0 {
-                println!("{}", "B");
+            if b.is_empty() {
+                println!("B");
                 break;
             }
             buff = b[0];
 
             b.remove(0);
         } else if buff == 'c' {
-            if c.len() == 0 {
-                println!("{}", "C");
+            if c.is_empty() {
+                println!("C");
                 break;
             }
             buff = c[0];
