@@ -4,6 +4,14 @@ version = "0.1.0"
 authors = ["aburaya6111 <59960488+aburaya6111@users.noreply.github.com>"]
 edition = "2018"
 
+[package.metadata.cargo-compete.bin]
+a = {name = "abc153-a",problem = {platform = "atcoder",contest = "abc153",index = "A"}}
+b = {name = "abc153-b",problem = {platform = "atcoder",contest = "abc153",index = "B"}}
+c = {name = "abc153-c",problem = {platform = "atcoder",contest = "abc153",index = "C"}}
+d = {name = "abc153-d",problem = {platform = "atcoder",contest = "abc153",index = "D"}}
+e = {name = "abc153-e",problem = {platform = "atcoder",contest = "abc153",index = "E"}}
+f = {name = "abc153-f",problem = {platform = "atcoder",contest = "abc153",index = "F"}}
+
 # dependencies added to new project
 [dependencies]
 # proconio = "*"
@@ -44,9 +52,29 @@ edition = "2018"
 #bitset-fixed = "0.1.0"
 proconio = { version = "0.3.6", features = ["derive"] }
 
-[profile.release]
-lto = true
-panic = 'abort'
-
 [build]
 target-dir = "../shared_rust_target/"
+
+[[bin]]
+name = "abc153-a"
+path = "./src/bin/a.rs"
+
+[[bin]]
+name = "abc153-b"
+path = "./src/bin/b.rs"
+
+[[bin]]
+name = "abc153-c"
+path = "./src/bin/c.rs"
+
+[[bin]]
+name = "abc153-d"
+path = "./src/bin/d.rs"
+
+[[bin]]
+name = "abc153-e"
+path = "./src/bin/e.rs"
+
+[[bin]]
+name = "abc153-f"
+path = "./src/bin/f.rs"

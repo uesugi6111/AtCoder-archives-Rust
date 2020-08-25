@@ -1,15 +1,13 @@
 [package]
-name = "agc009"
+name = "cargo-compete-template"
 version = "0.1.0"
-authors = ["aburaya6111 <59960488+aburaya6111@users.noreply.github.com>"]
 edition = "2018"
+publish = false
 
-[package.metadata.cargo-compete.bin]
-a = {name = "agc009-a",problem = {platform = "atcoder",contest = "agc009",index = "A"}}
-b = {name = "agc009-b",problem = {platform = "atcoder",contest = "agc009",index = "B"}}
-c = {name = "agc009-c",problem = {platform = "atcoder",contest = "agc009",index = "C"}}
-d = {name = "agc009-d",problem = {platform = "atcoder",contest = "agc009",index = "D"}}
-e = {name = "agc009-e",problem = {platform = "atcoder",contest = "agc009",index = "E"}}
+[[bin]]
+name = "cargo-compete-template"
+path = "src/main.rs"
+
 
 # dependencies added to new project
 [dependencies]
@@ -52,23 +50,3 @@ text_io = "0.1.8"
 whiteread = "0.5.0"
 rustc-hash = "1.1.0"
 smallvec = "1.2.0"
-
-[[bin]]
-name = "agc009-a"
-path = "./src/bin/a.rs"
-
-[[bin]]
-name = "agc009-b"
-path = "./src/bin/b.rs"
-
-[[bin]]
-name = "agc009-c"
-path = "./src/bin/c.rs"
-
-[[bin]]
-name = "agc009-d"
-path = "./src/bin/d.rs"
-
-[[bin]]
-name = "agc009-e"
-path = "./src/bin/e.rs"

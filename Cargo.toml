@@ -1,0 +1,3 @@
+[workspace]
+members = ["abc045", "abc125", "abc126", "abc127", "abc128", "abc129", "abc130", "abc131", "abc132", "abc133", "abc134", "abc135", "abc136", "abc137", "abc138", "abc139", "abc140", "abc141", "abc142", "abc143", "abc144", "abc145", "abc146", "abc147", "abc148", "abc149", "abc150", "abc151", "abc152", "abc153", "abc172", "abc174", "abc175", "abc176", "agc009", "agc021", "agc047", "arc002", "arc011", "arc049", "cargo-compete-template", "m-solutions2020", "abc124"]
+exclude = []

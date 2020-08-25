@@ -1,16 +1,31 @@
 [package]
-name = "abc150"
+name = "abc124"
 version = "0.1.0"
-authors = ["aburaya6111 <59960488+aburaya6111@users.noreply.github.com>"]
 edition = "2018"
+publish = false
 
 [package.metadata.cargo-compete.bin]
-a = {name = "abc150-a",problem = {platform = "atcoder",contest = "abc150",index = "A"}}
-b = {name = "abc150-b",problem = {platform = "atcoder",contest = "abc150",index = "B"}}
-c = {name = "abc150-c",problem = {platform = "atcoder",contest = "abc150",index = "C"}}
-d = {name = "abc150-d",problem = {platform = "atcoder",contest = "abc150",index = "D"}}
-e = {name = "abc150-e",problem = {platform = "atcoder",contest = "abc150",index = "E"}}
-f = {name = "abc150-f",problem = {platform = "atcoder",contest = "abc150",index = "F"}}
+a = { name = "abc124-a", problem = { platform = "atcoder", contest = "abc124", index = "A", url = "https://atcoder.jp/contests/abc124/tasks/abc124_a" } }
+b = { name = "abc124-b", problem = { platform = "atcoder", contest = "abc124", index = "B", url = "https://atcoder.jp/contests/abc124/tasks/abc124_b" } }
+c = { name = "abc124-c", problem = { platform = "atcoder", contest = "abc124", index = "C", url = "https://atcoder.jp/contests/abc124/tasks/abc124_c" } }
+d = { name = "abc124-d", problem = { platform = "atcoder", contest = "abc124", index = "D", url = "https://atcoder.jp/contests/abc124/tasks/abc124_d" } }
+
+[[bin]]
+name = "abc124-a"
+path = "src/bin/a.rs"
+
+[[bin]]
+name = "abc124-b"
+path = "src/bin/b.rs"
+
+[[bin]]
+name = "abc124-c"
+path = "src/bin/c.rs"
+
+[[bin]]
+name = "abc124-d"
+path = "src/bin/d.rs"
+
 
 # dependencies added to new project
 [dependencies]
@@ -54,26 +69,5 @@ whiteread = "0.5.0"
 rustc-hash = "1.1.0"
 smallvec = "1.2.0"
 
-[[bin]]
-name = "abc150-a"
-path = "./src/bin/a.rs"
-
-[[bin]]
-name = "abc150-b"
-path = "./src/bin/b.rs"
-
-[[bin]]
-name = "abc150-c"
-path = "./src/bin/c.rs"
-
-[[bin]]
-name = "abc150-d"
-path = "./src/bin/d.rs"
-
-[[bin]]
-name = "abc150-e"
-path = "./src/bin/e.rs"
-
-[[bin]]
-name = "abc150-f"
-path = "./src/bin/f.rs"
+[build]
+target = "wasm32-unknown-emscripten"
