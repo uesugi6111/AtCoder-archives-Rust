@@ -52,8 +52,7 @@ f = {name = "abc153-f",problem = {platform = "atcoder",contest = "abc153",index 
 #bitset-fixed = "0.1.0"
 proconio = { version = "0.3.6", features = ["derive"] }
 
-[build]
-target-dir = "../shared_rust_target/"
+
 
 [[bin]]
 name = "abc153-a"
