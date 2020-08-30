@@ -14,6 +14,7 @@
     "settings": {
         "terminal.integrated.shell.linux": "/bin/bash",
         "lldb.executable": "/usr/bin/lldb",
+        "lldb.libpython": "/usr/bin/python3.7",
         // VS Code don't watch files under ./target
         "files.watcherExclude": {
             "**/target/**": true
@@ -24,7 +25,8 @@
         "rust-lang.rust",
         "bungcip.better-toml",
         "vadimcn.vscode-lldb",
-        "mutantdino.resourcemonitor"
+        "mutantdino.resourcemonitor",
+        "matklad.rust-analyzer"
     ],
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],

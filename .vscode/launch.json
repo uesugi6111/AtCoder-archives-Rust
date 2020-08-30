@@ -24,7 +24,7 @@
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=abc124-a",
+                    "--bin=abc119-a",
                     "--manifest-path=Cargo.toml"
                 ],
                 "filter": {

@@ -14,7 +14,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get purge -y imagemagick imagemagick-6-common \
     # Install common packages, non-root user, updated lldb, dependencies
     && bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" \
-    && apt-get install -y lldb python3-minimal libpython3.7 \
+    && apt-get install -y lldb python3-minimal libpython3.7 python3-dev \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
 
 # Install Rust components
@@ -22,9 +22,11 @@ RUN  rustup  update  \
     && rustup component add rls rust-analysis rust-src rustfmt clippy 2>&1 
 
 RUN  cargo install cargo-compete
+RUN  cargo install cargo-member
 RUN echo '1.42.0' > rust-toolchain 
 RUN    rustc --version
 RUN rm  -f ./rust-toolchain 
+RUN rustup component add rls rust-analysis rust-src --toolchain 1.42.0-x86_64-unknown-linux-gnu
 RUN find  /usr/local/cargo/bin/ -exec chmod 777 {} \; 
 
 

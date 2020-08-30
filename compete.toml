@@ -4,7 +4,7 @@
 # - `include`: Adds the package to `workspace.members`
 # - `exclude`: Adds the package to `workspace.exclude` and create a symlink to the `compete.toml`
 # - `focus`:   Adds the package to `workspace.members` and remove the other from both of `workspace.{members, exclude}`
-new-workspace-member = "include"
+new-workspace-member = "focus"
 
 # Path to the test file (Liquid template)
 #
