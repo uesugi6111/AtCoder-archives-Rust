@@ -14,7 +14,7 @@
     "settings": {
         "terminal.integrated.shell.linux": "/bin/bash",
         "lldb.executable": "/usr/bin/lldb",
-        "lldb.libpython": "/usr/bin/python3.7",
+        "rust-client.engine": "rust-analyzer",
         // VS Code don't watch files under ./target
         "files.watcherExclude": {
             "**/target/**": true
