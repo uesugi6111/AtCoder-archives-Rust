@@ -1,7 +1,11 @@
+use my_crate::algorithm::eratosthenes;
+
 use proconio::{fastout, input};
 
 #[fastout]
 fn main() {
     input!(n: usize);
-    println!("{}", n);
+    let s = eratosthenes::sieve(n);
+
+    println!("{}", s.len());
 }
