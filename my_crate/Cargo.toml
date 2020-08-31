@@ -1,15 +1,11 @@
 [package]
-name = "cargo-compete-template"
+name = "my_crate"
 version = "0.1.0"
+authors = ["aburaya6111 <59960488+aburaya6111@users.noreply.github.com>"]
 edition = "2018"
-publish = false
 
-[[bin]]
-name = "cargo-compete-template"
-path = "src/main.rs"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-
-# dependencies added to new project
 [dependencies]
 num = "0.2.1"
 num-bigint = "0.2.6"
@@ -50,5 +46,3 @@ text_io = "0.1.8"
 whiteread = "0.5.0"
 rustc-hash = "1.1.0"
 smallvec = "1.2.0"
-
-my_crate = { path = "../my_crate" }
