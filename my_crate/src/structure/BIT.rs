@@ -45,17 +45,17 @@ where
     }
 }
 
-impl<T> Sum<(usize, usize), T> for BIT<T>
-where
-    T: Add + Sub + Clone + From<i32> + AddAssign,
-    T: std::ops::Sub<Output = T>,
-{
-    fn sum(&self, i: (usize, usize)) -> T {
-        let sum_l = self.sum(i.0 - 1);
-        let sum_r = self.sum(i.1);
-        sum_r - sum_l
-    }
-}
+// impl<T> Sum<(usize, usize), T> for BIT<T>
+// where
+//     T: Add + Sub + Clone + From<i32> + AddAssign,
+//     T: std::ops::Sub<Output = T>,
+// {
+//     fn sum(&self, i: (usize, usize)) -> T {
+//         let sum_l = self.sum(i.0 - 1);
+//         let sum_r = self.sum(i.1);
+//         sum_r - sum_l
+//     }
+// }
 
 #[test]
 fn test_sum() {
