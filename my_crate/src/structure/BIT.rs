@@ -25,15 +25,15 @@ where
     }
 }
 
-trait Sum<T, U> {
-    fn sum(&self, i: T) -> U;
+pub trait Sum<T, U> {
+     fn sum(&self, i: T) -> U;
 }
-
+ 
 impl<T> Sum<usize, T> for BIT<T>
 where
     T: Add + Sub + Clone + Copy + From<u8> + AddAssign,
 {
-    fn sum(&self, i: usize) -> T {
+     fn sum(&self, i: usize) -> T {
         let mut s = T::from(0u8);
 
         let mut cnt = i as i64;
@@ -45,17 +45,17 @@ where
     }
 }
 
-// impl<T> Sum<(usize, usize), T> for BIT<T>
-// where
-//     T: Add + Sub + Clone + From<i32> + AddAssign,
-//     T: std::ops::Sub<Output = T>,
-// {
-//     fn sum(&self, i: (usize, usize)) -> T {
-//         let sum_l = self.sum(i.0 - 1);
-//         let sum_r = self.sum(i.1);
-//         sum_r - sum_l
-//     }
-// }
+impl<T> Sum<(usize, usize), T> for BIT<T>
+where
+    T: Add + Sub + Clone + Copy + From<u8> + AddAssign,
+    T: std::ops::Sub<Output = T>,
+{
+     fn sum(&self, i: (usize, usize)) -> T {
+        let sum_l = <BIT<T> as Sum<usize, T>>::sum(self, i.0 - 1);
+        let sum_r = <BIT<T> as Sum<usize, T>>::sum(self, i.1);
+        sum_r - sum_l
+    }
+} 
 
 #[test]
 fn test_sum() {
@@ -64,7 +64,7 @@ fn test_sum() {
     for i in 1..101 {
         a.add(i, i);
     }
-    let sum = a.sum(100);
 
-    assert_eq!((0..101).sum::<usize>(), sum);
+    assert_eq!((0..101).sum::<usize>(), a.sum(100));
+    assert_eq!((2..101).sum::<usize>(), a.sum((2, 100)));
 }
