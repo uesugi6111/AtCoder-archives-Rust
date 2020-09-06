@@ -1,11 +1,11 @@
 #[cfg(test)]
 mod tests {
 
-    use super::sieve;
+    use super::*;
 
     #[test]
     fn era() {
-        assert_eq!(sieve(100000000).len(), 5761455);
+        assert_eq!(sieve_liner(10_000_000).len(), 5761455);
     }
 }
 
@@ -33,3 +33,34 @@ pub fn sieve(n: usize) -> Vec<usize> {
     }
     ps
 }
+
+///素因数列挙
+pub fn sieve_liner(n: usize) -> Vec<usize> {
+    let size = (n as f64 / (n as f64).ln() * 1.105) as usize;
+
+    let mut primes = Vec::with_capacity(size);
+    let mut d = vec![0usize; n + 1];
+    for i in 2..n + 1 {
+        if d[i] == 0 {
+            primes.push(i);
+            d[i] = i;
+        }
+        for p in &primes {
+            if p * i > n {
+                break;
+            }
+            d[*p * i] = *p;
+        }
+    }
+    d
+}
+
+#[test]
+fn aaa() {
+    let n = 1000usize;
+    let size = (n as f64 / (n as f64).ln() * 1.105) as usize;
+
+    println!("{}", size);
+}
+
+//y = sum[i = 2..x/log(x)] x/log(x)
