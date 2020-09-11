@@ -1,6 +1,4 @@
 pub mod algorithm;
-pub mod eraera;
-pub mod eratest;
 pub mod structure;
 #[cfg(test)]
 mod tests {

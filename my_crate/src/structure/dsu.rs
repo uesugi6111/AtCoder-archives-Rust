@@ -3,14 +3,15 @@ enum Node {
     Root(usize),
     Child(usize),
 }
+///UnionFind
 #[derive(Clone, Debug)]
-pub struct UnionFind {
+pub struct Dsu {
     uf: Vec<Node>,
 }
 
-impl UnionFind {
-    pub fn new(n: usize) -> UnionFind {
-        UnionFind {
+impl Dsu {
+    pub fn new(n: usize) -> Dsu {
+        Dsu {
             uf: vec![Node::Root(1); n],
         }
     }
@@ -49,5 +50,22 @@ impl UnionFind {
             Node::Root(size) => size,
             Node::Child(_) => 0,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn dsu_works() {
+        let mut d = Dsu::new(4);
+        d.unite(0, 1);
+        assert_eq!(d.is_same(0, 1), true);
+        d.unite(1, 2);
+        assert_eq!(d.is_same(0, 2), true);
+        assert_eq!(d.size(0), 3);
+        assert_eq!(d.is_same(0, 3), false);
+        // assert_eq!(d.groups(), vec![vec![0, 1, 2], vec![3]]);
     }
 }

@@ -1,2 +1,2 @@
-pub mod BIT;
-pub mod UnionFind;
+pub mod dsu;
+pub mod fenwicktree;

@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+///試割
 pub fn trial_division(mut n: usize) -> HashMap<usize, usize> {
     let mut primes = HashMap::new();
     let mut i = 2;
