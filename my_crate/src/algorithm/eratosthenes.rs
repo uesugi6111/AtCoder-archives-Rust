@@ -15,6 +15,40 @@ mod tests {
 
         assert_eq!(e.count(), 5761455);
     }
+    #[test]
+    fn a2() {
+        let mut e = Eratosthenes::new();
+        e.generate(1);
+
+        assert_eq!(e.count(), 0);
+    }
+    #[test]
+    fn mainn() {
+        let mut s = String::new();
+        std::io::stdin().read_line(&mut s).unwrap();
+        let mut it = s.trim().split_whitespace();
+        let n: usize = it.next().unwrap().parse().unwrap();
+        let a: usize = it.next().unwrap().parse().unwrap();
+        let b: usize = it.next().unwrap().parse().unwrap();
+
+        let mut e = Eratosthenes::new();
+        e.generate(n);
+        let p = e.primes();
+
+        let mut ans = vec![];
+        let mut i = b;
+        while i < p.len() {
+            ans.push(p[i]);
+            i += a;
+        }
+        let mut out = String::new();
+        out.push_str(&format!("{} {}\n", p.len(), ans.len()));
+        for a in ans {
+            out.push_str(&format!("{} ", a));
+        }
+        out.pop();
+        println!("{}", out);
+    }
 }
 
 /// エラトステネスの篩
@@ -129,7 +163,6 @@ impl Eratosthenes {
 
         let quart_x = ((n as f64).sqrt() + 1.0) as usize / 30 + 1;
 
-        self.flags_[0] = 0xfe;
         for i in 0..quart_x {
             let mut flags: u8 = self.flags_[i];
 
