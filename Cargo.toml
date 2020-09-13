@@ -1,4 +1,4 @@
 [workspace]
-members = [ "abc174", "my_crate", "apc001", "abc097"]
+members = [ "abc174", "my_crate", "apc001", "abc097", "abc109", "abc134"]
 exclude = []
 

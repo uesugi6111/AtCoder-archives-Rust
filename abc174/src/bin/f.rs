@@ -1,18 +1,18 @@
-mod BIT {
+mod fenwicktree {
     use std::clone::Clone;
     use std::convert::From;
     use std::ops::{Add, AddAssign, Sub};
 
     #[derive(Clone, Debug)]
-    pub struct BIT<T> {
+    pub struct FenwickTree<T> {
         array: Vec<T>,
     }
 
-    impl<T> BIT<T>
+    impl<T> FenwickTree<T>
     where
         T: Add + Sub + Clone + Copy + From<u8> + AddAssign,
     {
-        pub fn new(size: usize) -> BIT<T> {
+        pub fn new(size: usize) -> FenwickTree<T> {
             let v: Vec<T> = vec![T::from(0u8); size + 1];
             Self { array: v }
         }
@@ -29,7 +29,7 @@ mod BIT {
         fn sum(&self, i: T) -> U;
     }
 
-    impl<T> Sum<usize, T> for BIT<T>
+    impl<T> Sum<usize, T> for FenwickTree<T>
     where
         T: Add + Sub + Clone + Copy + From<u8> + AddAssign,
     {
@@ -47,21 +47,21 @@ mod BIT {
         }
     }
 
-    impl<T> Sum<(usize, usize), T> for BIT<T>
+    impl<T> Sum<(usize, usize), T> for FenwickTree<T>
     where
         T: Add + Sub + Clone + Copy + From<u8> + AddAssign,
         T: std::ops::Sub<Output = T>,
     {
         fn sum(&self, i: (usize, usize)) -> T {
-            let sum_l = <BIT<T> as Sum<usize, T>>::sum(self, i.0 - 1);
-            let sum_r = <BIT<T> as Sum<usize, T>>::sum(self, i.1);
+            let sum_l = <FenwickTree<T> as Sum<usize, T>>::sum(self, i.0 - 1);
+            let sum_r = <FenwickTree<T> as Sum<usize, T>>::sum(self, i.1);
             sum_r - sum_l
         }
     }
 
     #[test]
     fn test_sum() {
-        let mut a = BIT::new(100);
+        let mut a = FenwickTree::new(100);
 
         for i in 1..101 {
             a.add(i, i);
@@ -72,8 +72,8 @@ mod BIT {
     }
 }
 
+use fenwicktree::Sum;
 use proconio::{fastout, input, marker::*};
-use BIT::Sum;
 
 #[fastout]
 fn main() {
@@ -95,7 +95,7 @@ fn main() {
     }
 
     let mut ans = vec![0usize; q];
-    let mut bi_tree = BIT::BIT::<usize>::new(n);
+    let mut bi_tree = fenwicktree::FenwickTree::<usize>::new(n);
     for i in (0..n).rev() {
         for cv in &c_vv[i] {
             bi_tree.add(*cv + 1, 1);
