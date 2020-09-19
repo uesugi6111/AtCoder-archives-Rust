@@ -5,11 +5,7 @@ use proconio::{
 };
 #[fastout]
 fn main() {
-    input!(n: usize, k: usize, lr: [(usize, usize); k]);
-
-    
-
-
+    input!(n: usize, k: usize, _lr: [(usize, usize); k]);
 
     println!("{}", n);
 }
