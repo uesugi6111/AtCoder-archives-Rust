@@ -5,7 +5,11 @@ use proconio::{
 };
 #[fastout]
 fn main() {
-    input!(n: usize, k: usize, _lr: [(usize, usize); k]);
+    input!(_n: usize, k: usize, _lr: [(usize, usize); k]);
+    let aaa = Option::Some(1);
 
-    println!("{}", n);
+    for i in aaa{
+        print!("{}",i);
+    }
+
 }
