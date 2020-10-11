@@ -1,4 +1,4 @@
-FROM rust:1.46.0
+FROM rust:1.47.0
 
 # Options for setup script
 ARG INSTALL_ZSH="true"
@@ -18,18 +18,10 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
 
 # Install Rust components
-RUN  rustup  update  \
-    && rustup component add rls rust-analysis rust-src rustfmt clippy 2>&1 
-
-RUN  cargo install cargo-compete
-RUN  cargo install cargo-member
-RUN echo '1.42.0' > rust-toolchain 
-RUN    rustc --version
-RUN rm  -f ./rust-toolchain 
-RUN rustup component add rls rust-analysis rust-src --toolchain 1.42.0-x86_64-unknown-linux-gnu
-RUN find  /usr/local/cargo/bin/ -exec chmod 777 {} \; 
-
-
+RUN cargo install cargo-compete cargo-member
+RUN rustup toolchain install 1.42.0-x86_64-unknown-linux-gnu \
+    &&rustup component add rustc cargo rust-std rls rust-src rustfmt clippy --toolchain 1.42.0-x86_64-unknown-linux-gnu
+RUN find /usr/local/cargo/bin/ -exec chmod 777 {} \;
 
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
