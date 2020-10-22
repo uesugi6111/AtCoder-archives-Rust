@@ -8,23 +8,12 @@ pub fn trial_division(mut n: usize) -> HashMap<usize, usize> {
     while i * i <= n {
         while n % i == 0 {
             n /= i;
-            if primes.contains_key(&i) {
-                let x = primes.get_mut(&i).unwrap();
-                *x += 1;
-            } else {
-                primes.insert(i, 1);
-            }
+            primes.entry(i).and_modify(|e| *e += 1).or_insert(1);
         }
         i += 1;
     }
-
     if n > 1 {
-        if primes.contains_key(&n) {
-            let x = primes.get_mut(&n).unwrap();
-            *x += 1;
-        } else {
-            primes.insert(n, 1);
-        }
+        primes.entry(n).and_modify(|e| *e += 1).or_insert(1);
     }
     primes
 }

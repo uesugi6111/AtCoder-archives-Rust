@@ -5,15 +5,15 @@ mod tests {
 
     #[test]
     fn era() {
-        assert_eq!(sieve_liner(10_000_000).len(), 5761455);
+        assert_eq!(sieve_liner(10_000_000).len(), 5_761_455);
     }
 
     #[test]
     fn aaa() {
         let mut e = Eratosthenes::new();
-        e.generate(100000000);
+        e.generate(100_000_000);
 
-        assert_eq!(e.count(), 5761455);
+        assert_eq!(e.count(), 5_761_455);
     }
     #[test]
     fn a2() {
@@ -70,7 +70,7 @@ pub fn sieve(n: usize) -> Vec<usize> {
         }
         x += 2;
     }
-    for v in (x..n + 1).step_by(2).filter(|x| xs[(*x - 3) / 2] == true) {
+    for v in (x..n + 1).step_by(2).filter(|x| xs[(*x - 3) / 2]) {
         ps.push(v);
     }
     ps
@@ -138,7 +138,7 @@ impl Eratosthenes {
     ///素数フラグを処理
     ///- param n:usize 探索上限
     pub fn generate(&mut self, n: usize) -> &Self {
-        if n > 10000000000 {
+        if n > 10_000_000_000 {
             panic!();
         }
         self.n = n;
@@ -148,8 +148,8 @@ impl Eratosthenes {
 
         self.flags_[0] = 0xfe;
 
-        let r = n % 30;
-        self.flags_[size - 1] = match r {
+        let remainder = n % 30;
+        self.flags_[size - 1] = match remainder {
             1..=1 => 0x0,
             2..=7 => 0x1,
             8..=11 => 0x3,
@@ -223,5 +223,10 @@ impl Eratosthenes {
         if self.n == 0 {
             panic!();
         }
+    }
+}
+impl Default for Eratosthenes {
+    fn default() -> Self {
+        Eratosthenes::new()
     }
 }
