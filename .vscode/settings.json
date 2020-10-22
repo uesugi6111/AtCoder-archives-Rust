@@ -20,6 +20,7 @@
     "rust-analyzer.updates.askBeforeDownload": false,
     "rust-analyzer.updates.channel": "stable",
     "rust-analyzer.trace.server": "verbose",
+    "rust-analyzer.checkOnSave.command": "clippy",
     "lldb.libpython": ""
     //"rust.rust-analyzer.path": "/root/.vscode-server/data/User/globalStorage/matklad.rust-analyzer/rust-analyzer-linux",
 }
