@@ -15,7 +15,7 @@ fn main() {
         }
     }
 
-    let ss: std::collections::HashSet<String> = w.iter().map(|x| x.into_iter().collect()).collect();
+    let ss: std::collections::HashSet<String> = w.iter().map(|x| x.iter().collect()).collect();
     if w.len() != ss.len() {
         println!("No");
         return;

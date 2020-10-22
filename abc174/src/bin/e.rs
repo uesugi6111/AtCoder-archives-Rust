@@ -15,24 +15,25 @@ fn main() {
     let mut left = 0;
     let mut right = a[a.len() - 1];
 
-    let func = |t_max| -> bool {
+    let func = |t_max: &usize| -> bool {
         let mut cat_sum = 0;
-        for i in 0..a.len() {
-            if a[i] <= t_max {
+        for v in a.iter() {
+            if v <= t_max {
                 continue;
             }
-            cat_sum += a[i] / t_max;
+            cat_sum += v / t_max;
 
             if cat_sum > k {
                 return true;
             }
         }
+
         cat_sum > k
     };
     while right - left > 1 {
         let buff = (left + right) / 2;
 
-        if func(buff) {
+        if func(&buff) {
             left = buff;
         } else {
             right = buff;

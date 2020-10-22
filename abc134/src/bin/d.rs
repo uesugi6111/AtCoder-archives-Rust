@@ -28,7 +28,7 @@ fn main() {
         .filter(|x| *x.1 == 1)
         .map(|(x, _v)| x)
         .collect();
-    if aaans.len() == 0 {
+    if aaans.is_empty() {
         println!("0");
     } else {
         println!("{}", aaans.len());
