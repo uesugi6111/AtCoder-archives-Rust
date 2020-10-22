@@ -5,7 +5,7 @@ mod tests {
 
     #[test]
     fn era() {
-        assert_eq!(sieve_liner(10_000_000).len(), 5_761_455);
+        assert_eq!(sieve_liner(1_000_000).len(), 78_498);
     }
 
     #[test]
@@ -21,33 +21,6 @@ mod tests {
         e.generate(1);
 
         assert_eq!(e.count(), 0);
-    }
-    #[test]
-    fn mainn() {
-        let mut s = String::new();
-        std::io::stdin().read_line(&mut s).unwrap();
-        let mut it = s.trim().split_whitespace();
-        let n: usize = it.next().unwrap().parse().unwrap();
-        let a: usize = it.next().unwrap().parse().unwrap();
-        let b: usize = it.next().unwrap().parse().unwrap();
-
-        let mut e = Eratosthenes::new();
-        e.generate(n);
-        let p = e.primes();
-
-        let mut ans = vec![];
-        let mut i = b;
-        while i < p.len() {
-            ans.push(p[i]);
-            i += a;
-        }
-        let mut out = String::new();
-        out.push_str(&format!("{} {}\n", p.len(), ans.len()));
-        for a in ans {
-            out.push_str(&format!("{} ", a));
-        }
-        out.pop();
-        println!("{}", out);
     }
 }
 
@@ -78,9 +51,7 @@ pub fn sieve(n: usize) -> Vec<usize> {
 
 ///素因数列挙
 pub fn sieve_liner(n: usize) -> Vec<usize> {
-    let size = (n as f64 / (n as f64).ln() * 1.105) as usize;
-
-    let mut primes = Vec::with_capacity(size);
+    let mut primes = vec![];
     let mut d = vec![0usize; n + 1];
     for i in 2..n + 1 {
         if d[i] == 0 {
@@ -94,7 +65,7 @@ pub fn sieve_liner(n: usize) -> Vec<usize> {
             d[*p * i] = *p;
         }
     }
-    d
+    primes
 }
 
 ///エラトステネスの篩
