@@ -51,6 +51,30 @@ impl Dsu {
             Node::Child(_) => 0,
         }
     }
+    pub fn get_same_group(&mut self, x: usize) -> std::collections::HashSet<usize> {
+        let root = self.root(x);
+        let mut g = std::collections::HashSet::new();
+        for i in 0..self.uf.len() {
+            if root == self.root(i) {
+                g.insert(i);
+            }
+        }
+        g
+    }
+    pub fn get_all_groups(
+        &mut self,
+    ) -> std::collections::HashMap<usize, std::collections::HashSet<usize>> {
+        let mut map: std::collections::HashMap<usize, std::collections::HashSet<usize>> =
+            std::collections::HashMap::new();
+        for i in 0..self.uf.len() {
+            let root = self.root(i);
+
+            map.entry(root)
+                .or_insert_with(std::collections::HashSet::new)
+                .insert(i);
+        }
+        map
+    }
 }
 
 #[cfg(test)]
