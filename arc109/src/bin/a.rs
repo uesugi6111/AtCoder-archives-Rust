@@ -5,20 +5,21 @@ use proconio::{
 };
 #[fastout]
 fn main() {
-    input!(a: i64, b: i64, x: i64, y: i64);
+    input!(a: usize, b: usize, x: usize, y: usize);
 
-    let ab = a - b;
-
-    if ab == 0 {
-        println!("{}", x);
-        return;
-    }
-
-    let ans = if ab < 0 {
-        std::cmp::min(ab.abs() * y + x, x + 2 * x * ab.abs())
+    let time = if a <= b {
+        if 2 * x < y {
+            (b - a) * 2 * x + x
+        } else {
+            (b - a) * y + x
+        }
     } else {
-        std::cmp::min((ab.abs() - 1) * y + x, 2 * x * ab.abs() - x)
+        if 2 * x < y {
+            (a - b - 1) * 2 * x + x
+        } else {
+            (a - b - 1) * y + x
+        }
     };
 
-    println!("{}", ans);
+    println!("{}", time);
 }
