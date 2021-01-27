@@ -2,22 +2,25 @@ pub fn largest_rectangle(arg: &[i64]) -> i64 {
     let mut histogram: Vec<_> = arg.iter().collect();
     histogram.push(&0);
 
-    let mut stack: Vec<(i64, i64)> = vec![];
+    let mut stack = std::collections::VecDeque::<(i64, i64)>::new();
     let mut ans = 0;
 
     for (right, h) in histogram.iter().enumerate() {
-        if stack.is_empty() || stack[stack.len() - 1].1 <= **h {
-            stack.push((right as i64, **h));
-            continue;
+        if let Some((_, value)) = stack.back() {
+            if value <= *h {
+                stack.push_back((right as i64, **h));
+                continue;
+            }
         }
         let mut most_left = right as i64;
         while !stack.is_empty() && stack[stack.len() - 1].1 > **h {
-            let (left, value) = stack.pop().unwrap();
+            let (left, value) = stack.pop_back().unwrap();
             most_left = left;
             ans = std::cmp::max(ans, value * (right as i64 - most_left));
         }
-        stack.push((most_left, **h));
+        stack.push_back((most_left, **h));
     }
+
     ans
 }
 
