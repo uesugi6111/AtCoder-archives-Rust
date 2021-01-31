@@ -1,3 +1,4 @@
+pub mod enumdivisors;
 pub mod eratosthenes;
 pub mod largestrectangle;
 pub mod prime;

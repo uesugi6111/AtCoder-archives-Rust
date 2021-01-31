@@ -1,8 +1,6 @@
-use std::collections::HashMap;
-
 ///試割
-pub fn trial_division(mut n: usize) -> HashMap<usize, usize> {
-    let mut primes = HashMap::new();
+pub fn trial_division(mut n: i64) -> std::collections::HashMap<i64, i64> {
+    let mut primes = std::collections::HashMap::new();
     let mut i = 2;
 
     while i * i <= n {
@@ -18,21 +16,13 @@ pub fn trial_division(mut n: usize) -> HashMap<usize, usize> {
     primes
 }
 
-pub fn enum_divisors(n: usize) -> Vec<usize> {
-    let mut res = vec![];
-    for i in 1..(n as f64).sqrt() as usize + 1 {
-        if n % i == 0 {
-            res.push(i);
-            if n / i != i {
-                res.push(n / i);
-            }
-        }
-    }
-    res
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn test_trial_division() {
-    assert!(trial_division(25).contains_key(&5));
-    assert!(trial_division(25).get(&5).unwrap() == &2);
+    #[test]
+    fn test_trial_division() {
+        assert!(trial_division(25).contains_key(&5));
+        assert!(trial_division(25).get(&5).unwrap() == &2);
+    }
 }
