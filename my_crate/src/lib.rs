@@ -1,4 +1,5 @@
 pub mod algorithm;
+pub mod graph;
 pub mod math;
 pub mod structure;
 #[cfg(test)]
