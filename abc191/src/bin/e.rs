@@ -29,7 +29,7 @@ mod dijkstra {
 
     impl PartialOrd for Node {
         fn partial_cmp(&self, other: &Node) -> Option<std::cmp::Ordering> {
-            Some(other.cmp(self))
+            Some(other.cost.cmp(&(self.cost)))
         }
     }
 
@@ -52,6 +52,8 @@ mod dijkstra {
             if ret {
                 ret = false;
                 dist[start] = std::i64::MAX;
+            } else if end == pos {
+                return Some(cost);
             }
             for (t, c) in &edge[pos] {
                 let total_cost = cost + *c;
@@ -65,11 +67,6 @@ mod dijkstra {
                 });
             }
         }
-
-        if dist[end] == std::i64::MAX {
-            None
-        } else {
-            Some(dist[end])
-        }
+        None
     }
 }
