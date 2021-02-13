@@ -6,7 +6,7 @@ struct Node {
 
 impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Node) -> Option<std::cmp::Ordering> {
-        Some(other.cmp(self))
+        Some(other.cost.cmp(&(self.cost)))
     }
 }
 
@@ -20,26 +20,30 @@ pub fn dijkstra(edge: &[Vec<(usize, i64)>], start: usize, end: usize) -> Option<
     });
     dist[start] = 0;
 
+    let mut ret = start == end;
+
     while let Some(Node { pos, cost }) = pq.pop() {
-        if pos == end {
-            return Some(cost);
-        }
         if cost > dist[pos] {
             continue;
         }
-
+        if ret {
+            ret = false;
+            dist[start] = std::i64::MAX;
+        } else if end == pos {
+            return Some(cost);
+        }
         for (t, c) in &edge[pos] {
-            if dist[*t] <= cost + c {
+            let total_cost = cost + *c;
+            if dist[*t] <= total_cost {
                 continue;
             }
-            dist[*t] = cost + c;
+            dist[*t] = total_cost;
             pq.push(Node {
                 pos: *t,
-                cost: cost + c,
+                cost: total_cost,
             });
         }
     }
-
     None
 }
 
