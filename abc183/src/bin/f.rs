@@ -1,24 +1,38 @@
-#[allow(unused_imports)]
-use proconio::{
-    fastout, input,
-    marker::{Bytes, Chars, Isize1, Usize1},
-};
-#[fastout]
+#[rustfmt::skip]
+mod fast_input {
+    #[macro_export] macro_rules! input{(sc=$sc:expr,$($r:tt)*)=>{input_inner!{$sc,$($r)*}};($($r:tt)*)=>{let mut sc=fast_input::Scanner::new(std::io::stdin().lock(),4096);input_inner!{sc,$($r)*}};}
+    #[macro_export] macro_rules! input_inner{($sc:expr)=>{};($sc:expr,)=>{};($sc:expr,$var:ident:$t:tt$($r:tt)*)=>{let $var=read_value!($sc,$t);input_inner!{$sc $($r)*}};}
+    #[macro_export] macro_rules! read_value{($sc:expr,($($t:tt),*))=>{($(read_value!($sc,$t)),*)};($sc:expr,[$t:tt;$len:expr])=>{(0..$len).map(|_|read_value!($sc,$t)).collect::<Vec<_>>()};($sc:expr,Chars)=>{read_value!($sc,String).chars().collect::<Vec<char>>()};($sc:expr,Usize1)=>{read_value!($sc,usize)-1};($sc:expr,$t:ty)=>{$sc.next::<$t>()};}
+    pub struct Scanner {buf:Vec<u8>,pos: usize,}
+    impl Scanner {
+        pub fn new<R: std::io::Read>(mut reader: R, estimated: usize) -> Self {
+            let mut buf = Vec::with_capacity(estimated);let _=std::io::copy(&mut reader,&mut buf).unwrap();if buf.last()!=Some(&b'\n'){panic!("{}", 0);}
+            Scanner { buf, pos: 0 }
+        }
+        #[inline]
+        pub fn next<T: std::str::FromStr>(&mut self) -> T where T::Err: std::fmt::Debug,{
+            let mut start=None;loop{match(self.buf[self.pos],start.is_some()){(b' ',true)|(b'\n', true)=>break,(_, true)|(b' ', false)|(b'\n',false)=>self.pos+=1,(_, false)=>start=Some(self.pos),}}let target=&self.buf[start.unwrap()..self.pos];
+            unsafe { std::str::from_utf8_unchecked(target) }.parse().unwrap()
+        }
+    }
+}
+#[proconio::fastout]
 fn main() {
+    let mut sc = fast_input::Scanner::new(std::io::stdin().lock(), 4096);
+    input!(sc = sc, n: usize);
     input!(
-        n: usize,
+        sc = sc,
         q: usize,
         c: [usize; n],
         query: [(usize, usize, usize); q]
     );
-
     let mut dsu = dsu::Dsu::new(c);
 
     for qq in query {
         if qq.0 == 1 {
-            dsu.unite(qq.1, qq.2);
+            dsu.unite(qq.1 - 1, qq.2 - 1);
         } else {
-            println!("{}", dsu.get_class_num(qq.1, qq.2));
+            println!("{}", dsu.get_class_num(qq.1 - 1, qq.2));
         }
     }
 }
@@ -26,36 +40,39 @@ fn main() {
 mod dsu {
     #[derive(Debug, Clone)]
     enum Node {
-        Root(usize, std::collections::HashMap<usize, usize>),
+        Root(usize),
         Child(usize),
     }
     ///UnionFind
     #[derive(Clone, Debug)]
     pub struct Dsu {
         uf: Vec<Node>,
+        data: Vec<Option<std::collections::BTreeMap<usize, usize>>>,
     }
 
     impl Dsu {
         pub fn new(c: Vec<usize>) -> Dsu {
-            let mut a = vec![Node::Root(1, std::collections::HashMap::new()); 1];
-            let mut b: Vec<_> = c
+            let b: Vec<_> = c
                 .iter()
-                .map(|x| -> Node {
-                    let mut aaa = std::collections::HashMap::new();
-                    aaa.insert(*x, 1);
+                .map(|x| {
+                    Some({
+                        let mut aaa = std::collections::BTreeMap::new();
+                        aaa.insert(*x, 1);
 
-                    Node::Root(1, aaa)
+                        aaa
+                    })
                 })
                 .collect();
 
-            a.append(&mut b);
-
-            Dsu { uf: a }
+            Dsu {
+                uf: vec![Node::Root(1); c.len()],
+                data: b,
+            }
         }
 
         pub fn root(&mut self, target: usize) -> usize {
             match self.uf[target] {
-                Node::Root(_, _) => target,
+                Node::Root(_) => target,
                 Node::Child(par) => {
                     let root = self.root(par);
                     self.uf[target] = Node::Child(self.root(par));
@@ -74,19 +91,11 @@ mod dsu {
 
             let (i, j) = if size_x > size_y { (rx, ry) } else { (ry, rx) };
 
-            let map = if let Node::Root(_, map) = &self.uf[i] {
-                let mut m = map.clone();
-                if let Node::Root(_, a) = &self.uf[j] {
-                    for v in a.keys() {
-                        *m.entry(*v).or_insert(0) += *(a.get(v).unwrap_or(&0));
-                    }
-                }
-                m
-            } else {
-                std::collections::HashMap::new()
-            };
+            for (k, v) in self.data[j].take().unwrap().iter() {
+                *self.data[i].as_mut().unwrap().entry(*k).or_insert(0) += v;
+            }
 
-            self.uf[i] = Node::Root(size_x + size_y, map);
+            self.uf[i] = Node::Root(size_x + size_y);
             self.uf[j] = Node::Child(i);
 
             true
@@ -97,7 +106,7 @@ mod dsu {
         pub fn size(&mut self, x: usize) -> usize {
             let root = self.root(x);
             match self.uf[root] {
-                Node::Root(size, _) => size,
+                Node::Root(size) => size,
                 Node::Child(_) => 0,
             }
         }
@@ -127,10 +136,7 @@ mod dsu {
         }
         pub fn get_class_num(&mut self, x: usize, y: usize) -> usize {
             let root = self.root(x);
-            match &self.uf[root] {
-                Node::Root(_, a) => *a.get(&y).unwrap_or(&0),
-                Node::Child(_) => 0,
-            }
+            *self.data[root].as_ref().unwrap().get(&y).unwrap_or(&0)
         }
     }
 }
