@@ -87,7 +87,7 @@ mod fast_input {
         }
         #[inline]
         pub fn next<T: std::str::FromStr>(&mut self) -> T where T::Err: std::fmt::Debug,{
-            let mut start=None;loop{match(self.buf[self.pos],start.is_some()){(b' ',true)|(b'\n', true)=>break,(_, true)|(b' ', false)|(b'\n',false)=>self.pos+=1,(_, false)=>start=Some(self.pos),}}let target=&self.buf[start.unwrap()..self.pos];
+            let mut start=None;loop{match(self.buf[self.pos],start.is_some()){(b' ',true)|(b'\n', true)|(b'\r', true)=>break,(_, true)|(b' ', false)|(b'\n',false)|(b'\r', false)=>self.pos+=1,(_, false)=>start=Some(self.pos),}}let target=&self.buf[start.unwrap()..self.pos];
             unsafe { std::str::from_utf8_unchecked(target) }.parse().unwrap()
         }
     }
