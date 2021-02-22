@@ -80,4 +80,4 @@ rustc-hash = "1.1.0"
 smallvec = "1.2.0"
 
 
-my_crate = { path = "../my_crate" }
+competitive-library = { path = "../competitive-library" }

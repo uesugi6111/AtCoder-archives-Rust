@@ -1,33 +1,40 @@
 [package]
-name = "code-festival-2014-qualb"
+name = "abc192"
 version = "0.1.0"
 authors = ["uesugi6111 <59960488+aburaya6111@users.noreply.github.com>"]
 edition = "2018"
 
-[package.metadata.cargo-compete]
-config = "../compete.toml"
-
 [package.metadata.cargo-compete.bin]
-a = { name = "code-festival-2014-qualb-a", problem = { platform = "atcoder", contest = "code-festival-2014-qualb", index = "A", url = "https://atcoder.jp/contests/code-festival-2014-qualb/tasks/code_festival_qualB_a" } }
-b = { name = "code-festival-2014-qualb-b", problem = { platform = "atcoder", contest = "code-festival-2014-qualb", index = "B", url = "https://atcoder.jp/contests/code-festival-2014-qualb/tasks/code_festival_qualB_b" } }
-c = { name = "code-festival-2014-qualb-c", problem = { platform = "atcoder", contest = "code-festival-2014-qualb", index = "C", url = "https://atcoder.jp/contests/code-festival-2014-qualb/tasks/code_festival_qualB_c" } }
-d = { name = "code-festival-2014-qualb-d", problem = { platform = "atcoder", contest = "code-festival-2014-qualb", index = "D", url = "https://atcoder.jp/contests/code-festival-2014-qualb/tasks/code_festival_qualB_d" } }
+abc192-a = { alias = "a", problem = "https://atcoder.jp/contests/abc192/tasks/abc192_a" }
+abc192-b = { alias = "b", problem = "https://atcoder.jp/contests/abc192/tasks/abc192_b" }
+abc192-c = { alias = "c", problem = "https://atcoder.jp/contests/abc192/tasks/abc192_c" }
+abc192-d = { alias = "d", problem = "https://atcoder.jp/contests/abc192/tasks/abc192_d" }
+abc192-e = { alias = "e", problem = "https://atcoder.jp/contests/abc192/tasks/abc192_e" }
+abc192-f = { alias = "f", problem = "https://atcoder.jp/contests/abc192/tasks/abc192_f" }
 
 [[bin]]
-name = "code-festival-2014-qualb-a"
+name = "abc192-a"
 path = "src/bin/a.rs"
 
 [[bin]]
-name = "code-festival-2014-qualb-b"
+name = "abc192-b"
 path = "src/bin/b.rs"
 
 [[bin]]
-name = "code-festival-2014-qualb-c"
+name = "abc192-c"
 path = "src/bin/c.rs"
 
 [[bin]]
-name = "code-festival-2014-qualb-d"
+name = "abc192-d"
 path = "src/bin/d.rs"
+
+[[bin]]
+name = "abc192-e"
+path = "src/bin/e.rs"
+
+[[bin]]
+name = "abc192-f"
+path = "src/bin/f.rs"
 [dependencies]
 num = "=0.2.1"
 num-bigint = "=0.2.6"
