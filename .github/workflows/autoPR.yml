@@ -1,0 +1,27 @@
+name: Update submodule Pull Request
+on:
+  repository_dispatch:
+    types: [update]
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@master # リポジトリを読み込み
+
+
+      - run: git submodule update
+
+      - name: Create Pull Request 
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: Update submodule.
+          labels: Auto PR
+          branch: update-submodule 
+          commit-message: auto update submodule
+          base : master
+          reviewers : uesugi6111
+          delete-branch: true
+          token: ${{ secrets.AUTO_PR_TOKEN }}
