@@ -20,6 +20,7 @@ jobs:
           title: Update submodule.
           labels: Auto PR
           branch: update-submodule 
+          branch-suffix : timestamp 
           commit-message: auto update submodule
           base : master
           reviewers : uesugi6111
