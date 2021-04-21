@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@master # リポジトリを読み込み
 
 
-      - run: git submodule update
+      - run: git submodule update --remote
 
       - name: Create Pull Request 
         id: cpr
