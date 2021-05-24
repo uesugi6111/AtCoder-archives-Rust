@@ -1,3 +1,6 @@
 [submodule "competitive-library"]
 	path = competitive-library
 	url = https://github.com/uesugi6111/competitive-library.git
+[submodule "atcoder-typical90"]
+	path = atcoder-typical90
+	url = https://github.com/uesugi6111/atcoder-typical90.git
