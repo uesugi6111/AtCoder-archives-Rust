@@ -18,44 +18,59 @@ mod fast_input {
 #[proconio::fastout]
 fn main() {
     input!(n: usize, s: Chars);
-    let mut ans = 0;
-    for i in 0..n {
-        let z = z_algorithm(&s[i..n]);
-        let max = z
-            .iter()
-            .enumerate()
-            .map(|(i, &v)| i.min(v))
-            .max()
-            .unwrap_or(0);
-        ans = ans.max(max);
+
+    let (mut ng, mut ok) = (n + 1, 0);
+    let mut mid;
+
+    while ng - ok > 1 {
+        mid = (ng + ok) / 2;
+        let mut mached = false;
+
+        for i in 0..n {
+            if i + mid * 2 > n {
+                break;
+            }
+            if rh::rolling_hash(&s[i..i + mid], &s[i + mid..s.len()]) {
+                mached = true;
+                break;
+            }
+        }
+        if mached {
+            ok = mid;
+        } else {
+            ng = mid;
+        }
     }
-    println!("{}", ans);
+    println!("{}", ok);
 }
-pub fn z_algorithm(s: &[char]) -> Vec<usize> {
-    let length = s.len();
-    let mut z_array = vec![0_usize; length];
 
-    z_array[0] = length;
-    let (mut i, mut j) = (1, 0);
+mod rh {
 
-    while i < length {
-        while i + j < length && s[j] == s[i + j] {
-            j += 1;
+    //const BASE: u128 = 2_305_843_009_213_693_951; // 2^61-1
+    const BASE: u128 = 1000000007;
+    pub fn rolling_hash(s: &[char], t: &[char]) -> bool {
+        let l = s.len();
+
+        let pow_b = BASE.wrapping_pow(l as u32);
+
+        let mut target_hash: u128 = 0;
+        let mut base_hash: u128 = 0;
+        for k in 0..l {
+            base_hash = base_hash.wrapping_mul(BASE) + unsafe { *s.get_unchecked(k) } as u128;
+            target_hash = target_hash.wrapping_mul(BASE) + unsafe { *t.get_unchecked(k) } as u128;
         }
-
-        z_array[i] = j;
-
-        if j == 0 {
-            i += 1;
-            continue;
+        if target_hash == base_hash {
+            return true;
         }
-        let mut k = 1;
-        while k < j && k + z_array[k] < j {
-            z_array[i + k] = z_array[k];
-            k += 1;
+        for k in 0..t.len() - l {
+            target_hash = target_hash
+                .wrapping_mul(BASE)
+                .wrapping_add(unsafe { *t.get_unchecked(l + k) } as u128)
+                .wrapping_sub((unsafe { *t.get_unchecked(k) } as u128).wrapping_mul(pow_b));
+            if target_hash == base_hash {
+                return true;
+            }
         }
-        i += k;
-        j -= k;
+        false
     }
-    z_array
 }
