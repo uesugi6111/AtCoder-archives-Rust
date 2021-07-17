@@ -1,90 +1,93 @@
-use fenwicktree::Sum;
+#[rustfmt::skip]
+mod io_pro {
+    #[macro_export] macro_rules! input{(sc=$sc:expr,$($r:tt)*)=>{input_inner!{$sc,$($r)*}};($($r:tt)*)=>{let mut sc=io_pro::Scanner::new(std::io::stdin().lock());input_inner!{sc,$($r)*}};}
+    #[macro_export] macro_rules! input_inner{($sc:expr)=>{};($sc:expr,)=>{};($sc:expr,$var:ident:$t:tt$($r:tt)*)=>{let $var=read_value!($sc,$t);input_inner!{$sc $($r)*}};}
+    #[macro_export] macro_rules! read_value{($sc:expr,($($t:tt),*))=>{($(read_value!($sc,$t)),*)};($sc:expr,[$t:tt;$len:expr])=>{(0..$len).map(|_|read_value!($sc,$t)).collect::<Vec<_>>()};($sc:expr,Chars)=>{read_value!($sc,String).chars().collect::<Vec<char>>()};($sc:expr,Usize1)=>{read_value!($sc,usize)-1};($sc:expr,$t:ty)=>{$sc.next::<$t>()};}
+    pub struct Scanner{s:Box<str>,input:std::iter::Peekable<std::str::SplitAsciiWhitespace<'static>>,}
+    impl Scanner{
+        pub fn new<R:std::io::Read>(mut reader:R)->Self{let mut sc=Scanner{s:{let mut s=String::new();reader.read_to_string(&mut s).unwrap();s.into_boxed_str()},input:"".split_ascii_whitespace().peekable(),};let s:&'static str=unsafe{std::mem::transmute(&*sc.s)};sc.input=s.split_ascii_whitespace().peekable();sc}
+        #[inline]pub fn next<T:std::str::FromStr>(&mut self)->T where T::Err:std::fmt::Debug,{self.input.next().unwrap().parse::<T>().expect("Parse error")}
+    }
+}
+
 #[proconio::fastout]
 fn main() {
-    input!(n: usize, q: usize, a: [i64; n], txy: [(i32, i64, i64); q]);
+    input!(n: usize, q: usize, a: [u64; n], txy: [(i32, u64, u64); q]);
 
-    let mut ft = fenwicktree::FenwickTree::new(n + 3);
+    let mut ft = ft::FenwickTree::<ft::Xor>::new(n);
 
-    for v in a.iter().enumerate() {
-        ft.add(v.0 as i64 + 1, *v.1);
+    for (i, &v) in a.iter().enumerate() {
+        ft.add(i, v);
     }
 
     for (t, x, y) in txy {
         if t == 1 {
-            ft.add(x, y);
+            ft.add(x as usize - 1, y);
         } else {
-            println!("{}", ft.sum((x, y)));
+            println!("{}", ft.sum(y as usize) ^ ft.sum(x as usize - 1));
         }
     }
 }
 
-#[rustfmt::skip]
-mod fast_input {
-    // https://qiita.com/tanakh/items/0ba42c7ca36cd29d0ac8
-    #[macro_export]macro_rules! input{($($r:tt)*)=>{let s={use std::io::Read;let mut s=String::new();std::io::stdin().read_to_string(&mut s).unwrap();let input=Box::leak(s.into_boxed_str());input};let mut iter=s.split_ascii_whitespace();input_inner!{iter,$($r)*}};}
-    #[macro_export]macro_rules! input_inner{($iter:expr)=>{};($iter:expr,)=>{};($iter:expr,$var:ident:$t:tt$($r:tt)*)=>{let $var=read_value!($iter,$t);input_inner!{$iter $($r)*}};}
-    #[macro_export]macro_rules! read_value{($iter:expr,($($t:tt),*))=>{($(read_value!($iter,$t)),*)};($iter:expr,[$t:tt;$len:expr])=>{(0..$len).map(|_|read_value!($iter,$t)).collect::<Vec<_>>()};($iter:expr,Chars)=>{read_value!($iter,String).chars().collect::<Vec<char>>()};($iter:expr,Usize1)=>{read_value!($iter,usize)-1};($iter:expr,$t:ty)=>{$iter.next().unwrap().parse::<$t>().expect("Parse error")};}
-}
+mod ft {
+    //! BIT
 
-mod fenwicktree {
-    use std::clone::Clone;
-    use std::convert::From;
-    use std::ops::{Add, AddAssign, Sub};
+    pub trait Monoid {
+        type T: Clone;
+        fn identity_element() -> Self::T;
+        fn binary_operation(a: &Self::T, b: &Self::T) -> Self::T;
+    }
+
+    pub struct Xor {}
+    impl Monoid for Xor {
+        type T = u64;
+        #[inline]
+        fn identity_element() -> Self::T {
+            0 as u64
+        }
+        #[inline]
+        fn binary_operation(a: &Self::T, b: &Self::T) -> Self::T {
+            *a ^ *b
+        }
+    }
 
     ///binaryIndexTree
     #[derive(Clone, Debug)]
-    pub struct FenwickTree<T> {
-        array: Vec<T>,
+    pub struct FenwickTree<M>
+    where
+        M: Monoid,
+    {
+        array: Vec<M::T>,
     }
 
-    impl<T> FenwickTree<T>
+    impl<M> FenwickTree<M>
     where
-        T: Add + Sub + Clone + Copy + From<u8> + AddAssign + std::ops::BitXorAssign,
+        M: Monoid,
     {
-        pub fn new(size: usize) -> FenwickTree<T> {
-            let v: Vec<T> = vec![T::from(0u8); size + 1];
-            Self { array: v }
+        #[inline]
+        pub fn new(size: usize) -> FenwickTree<M> {
+            Self {
+                array: vec![M::identity_element(); size + 1],
+            }
         }
-        pub fn add(&mut self, mut i: i64, x: T) {
-            let n = self.array.len();
-            while i as usize <= n {
-                self.array[i as usize] ^= x;
+        #[inline]
+        pub fn add(&mut self, index: usize, x: M::T) {
+            let mut i = index + 1;
+            while i < self.array.len() {
+                self.array[i] = M::binary_operation(&self.array[i], &x);
                 i += i & i.wrapping_neg();
             }
         }
-    }
 
-    pub trait Sum<T, U> {
-        fn sum(&self, i: T) -> U;
-    }
-
-    impl<T> Sum<i64, T> for FenwickTree<T>
-    where
-        T: Add + Sub + Clone + Copy + From<u8> + AddAssign + std::ops::BitXorAssign,
-    {
-        fn sum(&self, mut i: i64) -> T {
-            if i == 0 {
-                return T::from(0u8);
-            }
-            let mut s = T::from(0u8);
-
+        #[inline]
+        pub fn sum(&self, end: usize) -> M::T {
+            let mut s = M::identity_element();
+            let mut i = end;
             while i > 0 {
-                s ^= self.array[i as usize];
+                s = M::binary_operation(&s, &self.array[i]);
                 i -= i & i.wrapping_neg();
             }
             s
-        }
-    }
-
-    impl<T> Sum<(i64, i64), T> for FenwickTree<T>
-    where
-        T: Add + Sub + Clone + Copy + From<u8> + AddAssign + std::ops::BitXorAssign,
-        T: std::ops::Sub<Output = T> + std::ops::BitXor<Output = T>,
-    {
-        fn sum(&self, i: (i64, i64)) -> T {
-            let sum_l = <FenwickTree<T> as Sum<i64, T>>::sum(self, i.0 - 1);
-            let sum_r = <FenwickTree<T> as Sum<i64, T>>::sum(self, i.1);
-            sum_r ^ sum_l
         }
     }
 }
