@@ -24,15 +24,14 @@ fn main() {
 
     let mut e = vec![vec![]; n];
     for &(a, b) in ab.iter() {
-        e[a - 1].push(b - 1);
-        e[b - 1].push(a - 1);
+        e[a - 1].push(b as i64 - 1);
+        e[b - 1].push(a as i64 - 1);
     }
-    let v = dijk::dijkstra(&e, 0);
-
+    let lca = lca::LowestCommonAncestor::new(&e, 0);
     for (c, d) in cd {
         println!(
             "{}",
-            if (v[c - 1] + v[d - 1]) % 2 == 0 {
+            if lca.get_distance(c - 1, d - 1, 0) % 2 == 0 {
                 "Town"
             } else {
                 "Road"
@@ -40,63 +39,131 @@ fn main() {
         )
     }
 }
+mod lca {
+    use std::collections::VecDeque;
 
-mod dijk {
-    #[derive(Debug, Clone, PartialEq, Eq, Ord)]
     struct Node {
-        pos: usize,
-        cost: i64,
+        pub parent: Option<usize>,
+        pub number: usize,
+        pub depth: i64,
     }
 
-    impl PartialOrd for Node {
-        fn partial_cmp(&self, other: &Node) -> Option<std::cmp::Ordering> {
-            Some(other.cost.cmp(&(self.cost)))
+    impl Node {
+        #[inline]
+        pub fn new(parent: Option<usize>, number: usize, depth: i64) -> Self {
+            Node {
+                parent,
+                number,
+                depth,
+            }
         }
     }
 
-    pub fn dijkstra(edge: &[Vec<usize>], start: usize) -> Vec<i64> {
-        let mut dist = vec![std::i64::MAX; edge.len()];
-        let mut pq = std::collections::BinaryHeap::<Node>::new();
+    pub struct LowestCommonAncestor {
+        max_log_v: usize,
+        depths: Vec<Option<i64>>,
+        ancestors: Vec<Vec<Option<usize>>>,
+    }
 
-        pq.push(Node {
-            pos: start,
-            cost: 0,
-        });
-        dist[start] = 0;
+    impl LowestCommonAncestor {
+        // 隣接リストで受け取る
+        #[inline]
+        pub fn new(edges: &[Vec<i64>], root: usize) -> Self {
+            let max_v = edges.len();
+            let max_log_v = ((max_v as f64).ln() / 2.0_f64.ln()) as usize + 1;
+            let mut ancestors = vec![vec![None; max_v]; max_log_v + 1];
+            let mut depths = vec![None; max_v];
 
-        while let Some(Node { pos, cost }) = pq.pop() {
-            if cost > dist[pos] {
-                continue;
-            }
-            for t in &edge[pos] {
-                let total_cost = cost + 1;
-                if dist[*t] <= total_cost {
+            let mut q = VecDeque::new();
+            q.push_back(Node::new(None, root, 0));
+            while let Some(node) = q.pop_front() {
+                if depths[node.number].is_some() {
                     continue;
                 }
-                dist[*t] = total_cost;
-                pq.push(Node {
-                    pos: *t,
-                    cost: total_cost,
-                });
+                ancestors[0][node.number] = node.parent;
+
+                depths[node.number] = Some(node.depth);
+                for i in 0..edges[node.number].len() {
+                    if node.parent.is_none() || node.parent.unwrap() as i64 != edges[node.number][i]
+                    {
+                        q.push_back(Node::new(
+                            Some(node.number),
+                            edges[node.number][i] as usize,
+                            node.depth + 1,
+                        ));
+                    }
+                }
+            }
+
+            (0..max_log_v).for_each(|i| {
+                (0..max_v).for_each(|j| {
+                    if let Some(ancetor) = ancestors[i][j] {
+                        ancestors[i + 1][j] = ancestors[i][ancetor];
+                    }
+                })
+            });
+
+            LowestCommonAncestor {
+                max_log_v,
+                depths,
+                ancestors,
             }
         }
-        dist
+        #[inline]
+        pub fn get_lca(&self, u: usize, v: usize) -> Option<usize> {
+            let (mut u, mut v) = if self.depths[u].unwrap_or(0) > self.depths[v].unwrap_or(0) {
+                (v, u)
+            } else {
+                (u, v)
+            };
+
+            for k in 0..self.max_log_v {
+                if (((self.depths[v].unwrap_or(0) - self.depths[u].unwrap_or(0)) >> k) & 1) == 1 {
+                    v = self.ancestors[k][v].unwrap();
+                }
+            }
+
+            if u == v {
+                return Some(u);
+            }
+
+            for k in (0..self.max_log_v).rev() {
+                if self.ancestors[k][u].is_none()
+                    || self.ancestors[k][v].is_none()
+                    || self.ancestors[k][u] == self.ancestors[k][v]
+                {
+                    continue;
+                }
+
+                u = self.ancestors[k][u].unwrap();
+                v = self.ancestors[k][v].unwrap();
+            }
+            self.ancestors[0][u]
+        }
+        #[inline]
+        pub fn get_distance(&self, u: usize, v: usize, root: usize) -> i64 {
+            let lca = self.get_lca(u, v).unwrap_or(root);
+            self.depths[u].unwrap_or(0) + self.depths[v].unwrap_or(0)
+                - self.depths[lca].unwrap_or(0) * 2
+        }
     }
 
-    #[test]
-    fn test_dijkstra() {
-        let graph = vec![
-            vec![(2, 10), (1, 1)],
-            vec![(3, 2)],
-            vec![(1, 1), (3, 3), (4, 1)],
-            vec![(0, 7), (4, 2)],
-            vec![],
-        ];
+    #[cfg(test)]
+    mod tests {
 
-        assert_eq!(dijkstra(&graph, 0, 1), Some(1));
-        assert_eq!(dijkstra(&graph, 0, 3), Some(3));
-        assert_eq!(dijkstra(&graph, 3, 0), Some(7));
-        assert_eq!(dijkstra(&graph, 0, 4), Some(5));
-        assert_eq!(dijkstra(&graph, 4, 0), None);
+        use super::*;
+        #[test]
+        fn test_lca() {
+            let n = 5;
+            let mut e = vec![vec![]; n];
+            for (i, &v) in [0, 0, 2, 2].iter().enumerate() {
+                e[v].push(i as i64 + 1);
+            }
+
+            let lca = LowestCommonAncestor::new(&e, 0);
+            for &(u, v, ans) in [(0, 1, 0), (0, 4, 0), (1, 2, 0), (2, 3, 2), (3, 4, 2)].iter() {
+                assert_eq!(lca.get_lca(u, v).unwrap_or(0), ans);
+            }
+        }
     }
 }
