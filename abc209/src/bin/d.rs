@@ -18,10 +18,6 @@ fn main() {
         cd: [(usize, usize); q]
     );
 
-    let mut v = vec![0_i64; n];
-    let mut ab = ab;
-    ab.sort();
-
     let mut e = vec![vec![]; n];
     for &(a, b) in ab.iter() {
         e[a - 1].push(b as i64 - 1);
@@ -61,7 +57,7 @@ mod lca {
 
     pub struct LowestCommonAncestor {
         max_log_v: usize,
-        depths: Vec<Option<i64>>,
+        depths: Vec<i64>,
         ancestors: Vec<Vec<Option<usize>>>,
     }
 
@@ -105,20 +101,20 @@ mod lca {
 
             LowestCommonAncestor {
                 max_log_v,
-                depths,
+                depths: depths.iter().map(|x| x.unwrap()).collect::<Vec<_>>(),
                 ancestors,
             }
         }
         #[inline]
         pub fn get_lca(&self, u: usize, v: usize) -> Option<usize> {
-            let (mut u, mut v) = if self.depths[u].unwrap_or(0) > self.depths[v].unwrap_or(0) {
+            let (mut u, mut v) = if self.depths[u] > self.depths[v] {
                 (v, u)
             } else {
                 (u, v)
             };
 
             for k in 0..self.max_log_v {
-                if (((self.depths[v].unwrap_or(0) - self.depths[u].unwrap_or(0)) >> k) & 1) == 1 {
+                if (((self.depths[v] - self.depths[u]) >> k) & 1) == 1 {
                     v = self.ancestors[k][v].unwrap();
                 }
             }
@@ -143,8 +139,7 @@ mod lca {
         #[inline]
         pub fn get_distance(&self, u: usize, v: usize, root: usize) -> i64 {
             let lca = self.get_lca(u, v).unwrap_or(root);
-            self.depths[u].unwrap_or(0) + self.depths[v].unwrap_or(0)
-                - self.depths[lca].unwrap_or(0) * 2
+            self.depths[u] + self.depths[v] - self.depths[lca] * 2
         }
     }
 
