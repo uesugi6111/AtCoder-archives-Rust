@@ -27,7 +27,7 @@ fn main() {
     for (c, d) in cd {
         println!(
             "{}",
-            if lca.get_distance(c - 1, d - 1, 0) % 2 == 0 {
+            if lca.get_distance(c - 1, d - 1) % 2 == 0 {
                 "Town"
             } else {
                 "Road"
@@ -57,6 +57,7 @@ mod lca {
 
     pub struct LowestCommonAncestor {
         max_log_v: usize,
+        root: usize,
         depths: Vec<i64>,
         ancestors: Vec<Vec<Option<usize>>>,
     }
@@ -68,27 +69,21 @@ mod lca {
             let max_v = edges.len();
             let max_log_v = ((max_v as f64).ln() / 2.0_f64.ln()) as usize + 1;
             let mut ancestors = vec![vec![None; max_v]; max_log_v + 1];
-            let mut depths = vec![None; max_v];
+            let mut depths = vec![0; max_v];
 
             let mut q = VecDeque::new();
             q.push_back(Node::new(None, root, 0));
             while let Some(node) = q.pop_front() {
-                if depths[node.number].is_some() {
-                    continue;
-                }
                 ancestors[0][node.number] = node.parent;
 
-                depths[node.number] = Some(node.depth);
-                for i in 0..edges[node.number].len() {
-                    if node.parent.is_none() || node.parent.unwrap() as i64 != edges[node.number][i]
-                    {
-                        q.push_back(Node::new(
-                            Some(node.number),
-                            edges[node.number][i] as usize,
-                            node.depth + 1,
-                        ));
-                    }
-                }
+                depths[node.number] = node.depth;
+
+                edges[node.number]
+                    .iter()
+                    .filter(|&&v| node.parent.filter(|&x| x == v as usize).is_none())
+                    .for_each(|&v| {
+                        q.push_back(Node::new(Some(node.number), v as usize, node.depth + 1))
+                    });
             }
 
             (0..max_log_v).for_each(|i| {
@@ -101,7 +96,8 @@ mod lca {
 
             LowestCommonAncestor {
                 max_log_v,
-                depths: depths.iter().map(|x| x.unwrap()).collect::<Vec<_>>(),
+                root,
+                depths,
                 ancestors,
             }
         }
@@ -137,8 +133,8 @@ mod lca {
             self.ancestors[0][u]
         }
         #[inline]
-        pub fn get_distance(&self, u: usize, v: usize, root: usize) -> i64 {
-            let lca = self.get_lca(u, v).unwrap_or(root);
+        pub fn get_distance(&self, u: usize, v: usize) -> i64 {
+            let lca = self.get_lca(u, v).unwrap_or(self.root);
             self.depths[u] + self.depths[v] - self.depths[lca] * 2
         }
     }
