@@ -1,3 +1,4 @@
+#![recursion_limit = "256"]
 #[rustfmt::skip]
 mod io_pro {
     #[macro_export] macro_rules! input{(sc=$sc:expr,$($r:tt)*)=>{input_inner!{$sc,$($r)*}};($($r:tt)*)=>{let mut sc=io_pro::Scanner::new(std::io::stdin().lock());input_inner!{sc,$($r)*}};}
@@ -11,6 +12,26 @@ mod io_pro {
 }
 #[proconio::fastout]
 fn main() {
-    input!(n: usize, m: usize, ab: [(i64, i64); n]);
-    println!("Yes");
+    input!(n: usize, m: usize, ab: [(usize, usize); m]);
+
+    let mut e = vec![vec![]; n * 2 + 1];
+    for (a, b) in ab {
+        e[a].push(b);
+    }
+    println!("{}", f(&e, 1, n + 2));
+}
+
+fn f(e: &[Vec<usize>], from: usize, to: usize) -> i64 {
+    if to - from <= 1 {
+        return 1;
+    }
+
+    let mut sum = 0;
+    for &i in e[from].iter() {
+        if i == to {
+            continue;
+        }
+        sum += (f(e, from, i) * f(e, i + 1, to)) % 998244353;
+    }
+    sum % 998244353
 }

@@ -9,25 +9,17 @@ mod io_pro {
         #[inline]pub fn next<T:std::str::FromStr>(&mut self)->T where T::Err:std::fmt::Debug,{self.input.next().unwrap().parse::<T>().expect("Parse error")}
     }
 }
+use std::cmp::Ordering::{Equal, Greater, Less};
 #[proconio::fastout]
 fn main() {
-    input!(a: i64, b: i64, c: i64);
-    if c % 2 == 0 || (a >= 0 && b >= 0) {
-        println!(
-            "{}",
-            if a.abs() == b.abs() {
-                "="
-            } else if a.abs() < b.abs() {
-                "<"
-            } else {
-                ">"
-            }
-        );
-    } else if a < 0 {
-        println!("<");
-    } else if a == b {
-        println!("=")
-    } else {
-        println!(">");
-    }
+    input!(a: i64, b: i64, c: u32);
+    let c = c % 2 + 2;
+    println!(
+        "{}",
+        match a.pow(c).cmp(&b.pow(c)) {
+            Less => "<",
+            Equal => "=",
+            Greater => ">",
+        }
+    );
 }

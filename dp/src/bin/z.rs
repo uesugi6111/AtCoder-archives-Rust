@@ -5,6 +5,9 @@ use proconio::{
 };
 #[fastout]
 fn main() {
-    input!(n: usize);
-    println!("{}", n);
+    input!(n: Chars);
+
+    for c in n {
+        println!("{}", c as i32);
+    }
 }

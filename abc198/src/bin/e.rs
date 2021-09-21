@@ -30,6 +30,7 @@ fn main() {
     });
 
     let mut que = std::collections::VecDeque::new();
+    let mut see = vec![false; n + 1];
 
     // 次数が0の点をキューに入れる
 
@@ -40,63 +41,34 @@ fn main() {
         // 幅優先探索
         let now = que.pop_front().unwrap();
 
-        for &e in g[now].iter() {
-            if color[e].is_some() {
+        for (i, &e) in g[now].iter().enumerate() {
+            if see[e] {
                 continue;
             }
             let ccc = c[e - 1];
             if !color[now].as_ref().unwrap().contains(&ccc) {
                 ans.push(e);
             }
-            let mut set = color[now].as_ref().unwrap().clone();
-            set.insert(ccc);
-            color[e] = Some(set);
 
+            if i == g[now].len() - 1 {
+                let p1: *mut Option<_> = &mut color[e];
+                let p2: *mut Option<_> = &mut color[now];
+                unsafe {
+                    p1.swap(p2);
+                }
+
+                color[e].as_mut().unwrap().insert(ccc);
+            } else {
+                let mut set = color[now].as_ref().unwrap().clone();
+                set.insert(ccc);
+                color[e] = Some(set);
+            }
+            see[e] = true;
             que.push_back(e);
         }
     }
-    ans.sort();
+    ans.sort_unstable();
     for v in ans {
         println!("{}", v);
     }
-}
-
-/* topo_sort(G): グラフG をトポロジカルソート
-   返り値: トポロジカルソートされた頂点番号
-   計算量: O(|E|+|V|)
-*/
-fn topo_sort(g: &[Vec<usize>]) -> Vec<usize> {
-    // bfs
-    let mut ans = vec![];
-    let n = g.len();
-    // ind[i]: 頂点iに入る辺の数(次数)
-    let mut ind = vec![0; n];
-    // 次数を数えておく
-    for i in 0..n {
-        for &e in g[i].iter() {
-            ind[e] += 1;
-        }
-    }
-    let mut que = std::collections::VecDeque::new();
-
-    // 次数が0の点をキューに入れる
-    for i in 0..n {
-        if ind[i] == 0 {
-            que.push_back(i);
-        }
-    }
-    while !que.is_empty() {
-        // 幅優先探索
-        let now = que.pop_front().unwrap();
-
-        ans.push(now);
-
-        for &e in g[now].iter() {
-            ind[e] -= 1;
-            if ind[e] == 0 {
-                que.push_back(e);
-            }
-        }
-    }
-    ans
 }

@@ -9,8 +9,46 @@ mod io_pro {
         #[inline]pub fn next<T:std::str::FromStr>(&mut self)->T where T::Err:std::fmt::Debug,{self.input.next().unwrap().parse::<T>().expect("Parse error")}
     }
 }
-#[proconio::fastout]
 fn main() {
-    input!(n: usize);
-    println!("Yes");
+    use std::io::{stdout, BufWriter, Write};
+    input!(s: Chars);
+    let z = z_algorithm(&s);
+    let out = stdout();
+    let mut out_lock = BufWriter::new(out.lock());
+    for (i, c) in z.iter().enumerate() {
+        if i == z.len() - 1 {
+            writeln!(&mut out_lock, "{}", c).ok();
+        } else {
+            write!(&mut out_lock, "{} ", c).ok();
+        }
+    }
+}
+
+fn z_algorithm(s: &[char]) -> Vec<usize> {
+    let length = s.len();
+    let mut z_array = vec![0_usize; length];
+
+    z_array[0] = length;
+    let (mut i, mut j) = (1, 0);
+
+    while i < length {
+        while i + j < length && s[j] == s[i + j] {
+            j += 1;
+        }
+
+        z_array[i] = j;
+
+        if j == 0 {
+            i += 1;
+            continue;
+        }
+        let mut k = 1;
+        while k < j && k + z_array[k] < j {
+            z_array[i + k] = z_array[k];
+            k += 1;
+        }
+        i += k;
+        j -= k;
+    }
+    z_array
 }

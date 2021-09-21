@@ -12,5 +12,22 @@ mod io_pro {
 #[proconio::fastout]
 fn main() {
     input!(n: usize);
-    println!("Yes");
+    let mut table = vec![false; n + 1];
+    let ans: i64 = (1..=n)
+        .map(|i| {
+            if table[i] {
+                return 0;
+            }
+            let mut count: i64 = 0;
+            for j in 1..=n {
+                if i * j * j > n {
+                    break;
+                }
+                table[i * j * j] = true;
+                count += 1;
+            }
+            count.pow(2)
+        })
+        .sum();
+    println!("{}", ans);
 }
