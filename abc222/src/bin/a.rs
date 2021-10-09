@@ -11,12 +11,6 @@ mod io_pro {
 }
 #[proconio::fastout]
 fn main() {
-    input!(n: Chars);
-
-    let mut s = "".to_string();
-    for i in 0..4 - n.len() {
-        s.push_str("0");
-    }
-    s.push_str(&n.iter().collect::<String>());
-    println!("{}", s);
+    input!(n: usize);
+    println!("{:04}", n);
 }
