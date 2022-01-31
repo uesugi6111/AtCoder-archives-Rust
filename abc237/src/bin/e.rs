@@ -16,82 +16,63 @@ fn main() {
     let mut e = vec![vec![]; n];
     for (u, v) in uv {
         let (c1, c2) = if h[u - 1] < h[v - 1] {
-            ((h[v - 1] - h[u - 1]), -2 * (h[v - 1] - h[u - 1]))
+            (-(h[v - 1] - h[u - 1]), 2 * (h[v - 1] - h[u - 1]))
         } else {
-            (-2 * (h[u - 1] - h[v - 1]), (h[u - 1] - h[v - 1]))
+            (2 * (h[u - 1] - h[v - 1]), -(h[u - 1] - h[v - 1]))
         };
         e[u - 1].push((v - 1, c2));
         e[v - 1].push((u - 1, c1));
     }
 
-    let ans = dijk::dijkstra(&e, 0);
+    let ans = spfa::spfa(&e, 0).unwrap();
 
-    println!(
-        "{}",
-        ans.iter()
-            .map(|x| x.unwrap_or(std::i64::MIN))
-            .max()
-            .unwrap()
-    );
+    println!("{}", -ans.iter().min().unwrap());
 }
-mod dijk {
-    //! ダイクストラ
 
-    use std::{cmp::Ordering, collections::BinaryHeap};
+mod spfa {
+    //! SPFA
 
-    #[derive(Debug, Clone, Eq)]
-    pub struct Node {
-        position: usize,
-        cost: i64,
-    }
-    impl Node {
-        #[inline]
-        pub fn new(position: usize, cost: i64) -> Self {
-            Node { position, cost }
-        }
-    }
-    impl PartialEq for Node {
-        fn eq(&self, other: &Node) -> bool {
-            self.cost.eq(&other.cost)
-        }
-    }
-    impl PartialOrd for Node {
-        fn partial_cmp(&self, other: &Node) -> Option<Ordering> {
-            Some(other.cost.cmp(&(self.cost)))
-        }
-    }
-    impl Ord for Node {
-        fn cmp(&self, other: &Self) -> Ordering {
-            self.cost.cmp(&(other.cost))
-        }
-    }
+    use std::collections::VecDeque;
 
-    pub fn dijkstra(edge: &[Vec<(usize, i64)>], start: usize) -> Vec<Option<i64>> {
-        let mut costs = vec![None; edge.len()];
-        let mut nodes = BinaryHeap::new();
-        nodes.push(Node::new(start, 0));
+    pub fn spfa(edge: &[Vec<(usize, i64)>], start: usize) -> Option<Vec<i64>> {
+        let mut pending = vec![false; edge.len()];
+        let mut times = vec![0; edge.len()];
+        let mut costs = vec![std::i64::MAX; edge.len()];
+        let mut q = VecDeque::new();
+        q.push_back(start);
+        times[start] = 1;
+        costs[start] = 0;
+        pending[start] = true;
 
-        while let Some(Node { position, cost }) = nodes.pop() {
-            if costs[position].is_some() {
-                continue;
+        while let Some(p) = q.pop_front() {
+            pending[p] = false;
+
+            for &(to, c) in &edge[p] {
+                let cost = costs[p] + c;
+                if costs[to] <= cost {
+                    continue;
+                }
+                costs[to] = cost;
+                if !pending[to] {
+                    times[to] += 1;
+                    if times[to] >= edge.len() {
+                        return None;
+                    }
+                    pending[to] = true;
+                    q.push_back(to);
+                }
             }
-            costs[position] = Some(cost);
-
-            edge[position]
-                .iter()
-                .filter(|(to, c)| costs[*to].filter(|&d| d <= cost + c).is_none())
-                .for_each(|&(to, c)| {
-                    nodes.push(Node::new(to, cost + c));
-                });
         }
-        costs
+
+        Some(costs)
     }
 
     #[cfg(test)]
     mod tests {
-        use super::*;
+        use super::spfa;
+
         #[test]
-        fn test_dijkstra() {
+        fn test_spfa() {
             let graph = vec![
                 vec![(2, 10), (1, 1)],
                 vec![(3, 2)],
@@ -99,18 +80,9 @@ mod dijk {
                 vec![(0, 7), (4, 2)],
                 vec![],
             ];
+            let ans = spfa(&graph, 0);
 
-            assert_eq!(dijkstra(&graph, 0, 1), Some(1));
-            assert_eq!(dijkstra(&graph, 0, 2), Some(10));
-            assert_eq!(dijkstra(&graph, 0, 3), Some(3));
-            assert_eq!(dijkstra(&graph, 0, 4), Some(5));
-            assert_eq!(dijkstra(&graph, 3, 0), Some(7));
-            assert_eq!(dijkstra(&graph, 4, 0), None);
-        }
-        #[test]
-        #[should_panic]
-        fn test_panic() {
-            dijkstra(&[], 0, 0);
+            assert_eq!(ans.unwrap(), vec![0, 1, 10, 3, 5]);
         }
     }
 }
