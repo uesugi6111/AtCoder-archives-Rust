@@ -13,28 +13,17 @@ mod io_pro {
 fn main() {
     input!(n: usize, q: usize, lr: [(i64, i64); q]);
 
-    let mut dsu = dsu::DisjointSetUnion::new(n);
+    let mut dsu = dsu::DisjointSetUnion::new(n + 1);
 
     for &(l, r) in lr.iter() {
-        dsu.unite(l as usize - 1, r as usize - 1);
+        dsu.unite(l as usize - 1, r as usize);
     }
 
-    let group = dsu.get_all_groups();
-
-    let mut v = vec![false; n + 1];
-
-    for (l, r) in lr {
-        v[l as usize - 1] = true;
-        v[r as usize] = true;
-    }
-
-    let ans = v.iter().all(|&x| x);
-
-    if !ans && group.len() == 1 {
+    if dsu.is_same(0, n) {
         println!("Yes");
         return;
     }
-    println!("{}", if ans { "Yes" } else { "No" });
+    println!("No");
 }
 
 mod dsu {
