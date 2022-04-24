@@ -12,10 +12,6 @@ mod io_pro {
 #[proconio::fastout]
 fn main() {
     let since = Instant::now();
-    let duration_inv = 1.0 / 1.5;
-    let mut time = (std::time::Instant::now() - since).as_secs_f64() * duration_inv;
-    eprintln!(r#"{}"#, &time);
-
     input!(t: [Chars; 30]);
     let tiles = t
         .iter()
@@ -23,28 +19,64 @@ fn main() {
         .collect::<Vec<Vec<usize>>>();
     let mut seed = (0..900).map(|_| 0).collect::<Vec<_>>();
     let mut xorshift = xorshift::XorShift::new();
-    time = (std::time::Instant::now() - since).as_secs_f64() * duration_inv;
-    eprintln!(r#"{}"#, &time);
-    let mut max = 0;
-    // while time < 1.0 {
-    //     let mut all_iter = 0;
-    //     all_iter += 1;
-    //     if (all_iter & ((1 << 2) - 1)) == 0 {
-    //         time = (std::time::Instant::now() - since).as_secs_f64() * duration_inv;
-    //         dbg!(&time);
-    //     }
-    for _ in 0..10000 {
+
+    let mut max = (0, vec![]);
+
+    for _ in 0..100 {
         let buff = (0..900)
             .map(|_| (xorshift.next().unwrap() as u64 % 3) as i32)
             .collect::<Vec<_>>();
         let s = compute_score(&tiles, &buff);
-        if max < s {
+        if max.0 < s.0 {
             max = s;
             seed = buff;
         }
     }
-    eprintln!(r#"{}"#, &max);
-    let output = seed;
+
+    let mut next_g = seed.clone();
+    let mut time = 0;
+    let mut all_iter = 0;
+    let mut count = 0;
+
+    while time < 1900 {
+        all_iter += 1;
+        if (all_iter & ((1 << 4) - 1)) == 0 {
+            time = Instant::now().duration_since(since).as_millis();
+        }
+        let mut m = max.clone();
+        let mut n = next_g.clone();
+        for _ in 0..20 {
+            let mut copied = next_g.clone();
+            for _ in 0..200 {
+                let r = xorshift.next().unwrap() % 900;
+                // let mut is_ok = true;
+                // for i in m.1[r as usize / 30][r as usize % 30].iter() {
+                //     if i.0 > 2 || i.1 > 2 {
+                //         is_ok = false;
+                //         break;
+                //     }
+                // }
+                // if !is_ok {
+                //     continue;
+                // }
+                copied[r as usize] += 1;
+                copied[r as usize] %= 3;
+            }
+            let s = compute_score(&tiles, &copied);
+            if m.0 < s.0 {
+                m = s;
+                n = copied;
+            }
+        }
+        if max.0 == m.0 {
+            count += 1;
+        }
+        next_g = n;
+        max = m;
+    }
+    eprintln!(r#"{}"#, &max.0);
+    eprintln!(r#"{} / {}"#, &count, &all_iter);
+    let output = next_g;
     println!(
         "{}",
         output
@@ -145,7 +177,7 @@ const TO: [[usize; 4]; 8] = [
     [!0, 3, !0, 1],
 ];
 
-pub fn compute_score(input: &[Vec<usize>], out: &Output) -> i64 {
+pub fn compute_score(input: &[Vec<usize>], out: &Output) -> (i64, Vec<Vec<Vec<(i32, i32)>>>) {
     let mut tiles = input.iter().cloned().collect::<Vec<_>>();
     for i in 0..N {
         for j in 0..N {
@@ -205,7 +237,7 @@ pub fn compute_score(input: &[Vec<usize>], out: &Output) -> i64 {
         }
         ls[ls.len() - 1].0 * ls[ls.len() - 2].0
     };
-    score as i64
+    (score as i64, cycle)
 }
 
 #[test]
