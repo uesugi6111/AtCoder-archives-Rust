@@ -11,14 +11,34 @@ mod io_pro {
 }
 #[proconio::fastout]
 fn main() {
-    input!(n: usize);
-    println!("{}", f(n));
-}
-
-fn f(n: usize) -> String {
-    if n == 1 {
-        return "1".to_string();
+    input!(n: usize, k: i64, xy: [(i64, i64); n]);
+    if k == 1 {
+        println!("Infinity");
+        return;
     }
-    let s = f(n - 1);
-    return format!("{} {} {}", s, n, s);
+    if k == 2 {
+        println!("{}", ((n - 1) * (n - 2)) / 2);
+        return;
+    }
+
+    let mut map = std::collections::HashMap::new();
+
+    for i in 0..n {
+        for j in i + 1..n {
+            let a_u = xy[i].1 - xy[j].0;
+            let a_d = xy[i].0 - xy[j].1;
+
+            let b_u = xy[i].0 * xy[j].1 - xy[j].0 * xy[i].1;
+            let b_d = xy[i].0 - xy[j].0;
+
+            let a = ((a_u as f64 / a_d as f64) * 100000000000.0) as i64;
+            let b = ((b_u as f64 / b_d as f64) * 100000000000.0) as i64;
+
+            *map.entry((a, b)).or_insert(0) += 1;
+        }
+    }
+
+    let ans = map.iter().filter(|(_, v)| *v >= &k).count();
+
+    println!("{}", ans);
 }

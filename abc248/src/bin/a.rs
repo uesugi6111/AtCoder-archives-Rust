@@ -11,14 +11,17 @@ mod io_pro {
 }
 #[proconio::fastout]
 fn main() {
-    input!(n: usize);
-    println!("{}", f(n));
-}
+    input!(s: Chars);
 
-fn f(n: usize) -> String {
-    if n == 1 {
-        return "1".to_string();
+    let mut set = s
+        .iter()
+        .map(|&c| c as usize - 48)
+        .collect::<std::collections::HashSet<_>>();
+
+    for i in 0..10 {
+        if !set.contains(&i) {
+            println!("{}", i);
+            return;
+        }
     }
-    let s = f(n - 1);
-    return format!("{} {} {}", s, n, s);
 }

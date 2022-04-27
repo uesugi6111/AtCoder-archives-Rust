@@ -11,14 +11,13 @@ mod io_pro {
 }
 #[proconio::fastout]
 fn main() {
-    input!(n: usize);
-    println!("{}", f(n));
-}
+    input!(mut a: i64, b: i64, k: i64);
 
-fn f(n: usize) -> String {
-    if n == 1 {
-        return "1".to_string();
+    let mut count = 0;
+
+    while a < b {
+        count += 1;
+        a *= k;
     }
-    let s = f(n - 1);
-    return format!("{} {} {}", s, n, s);
+    println!("{}", count);
 }

@@ -12,13 +12,5 @@ mod io_pro {
 #[proconio::fastout]
 fn main() {
     input!(n: usize);
-    println!("{}", f(n));
-}
-
-fn f(n: usize) -> String {
-    if n == 1 {
-        return "1".to_string();
-    }
-    let s = f(n - 1);
-    return format!("{} {} {}", s, n, s);
+    println!("Yes");
 }

@@ -11,14 +11,31 @@ mod io_pro {
 }
 #[proconio::fastout]
 fn main() {
-    input!(n: usize);
-    println!("{}", f(n));
-}
+    input!(
+        n: usize,
+        a: [i64; n],
+        q: usize,
+        query: [(usize, usize, i64); q]
+    );
 
-fn f(n: usize) -> String {
-    if n == 1 {
-        return "1".to_string();
+    let mut map = std::collections::HashMap::new();
+
+    for (i, &(value)) in a.iter().enumerate() {
+        map.entry(value)
+            .or_insert_with(std::collections::BTreeSet::new)
+            .insert(i + 1);
     }
-    let s = f(n - 1);
-    return format!("{} {} {}", s, n, s);
+
+    for (l, r, x) in query.iter() {
+        let buff = map.get(x);
+        if buff.is_none() {
+            println!("0");
+            continue;
+        }
+        let len = buff.unwrap().len()
+            - buff.unwrap().range(..l).count()
+            - buff.unwrap().range(r + 1..).count();
+
+        println!("{}", len);
+    }
 }
