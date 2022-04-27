@@ -1,7 +1,6 @@
 [package]
 name = "abc194"
 version = "0.1.0"
-authors = ["uesugi6111 <59960488+aburaya6111@users.noreply.github.com>"]
 edition = "2018"
 
 [package.metadata.cargo-compete.bin]
@@ -35,6 +34,7 @@ path = "src/bin/e.rs"
 [[bin]]
 name = "abc194-f"
 path = "src/bin/f.rs"
+
 [dependencies]
 num = "=0.2.1"
 num-bigint = "=0.2.6"
@@ -76,3 +76,5 @@ whiteread = "=0.5.0"
 rustc-hash = "=1.1.0"
 smallvec = "=1.2.0"
 competitive-library = { path = "../competitive-library" }
+
+[dev-dependencies]
