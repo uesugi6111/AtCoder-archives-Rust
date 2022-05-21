@@ -13,11 +13,10 @@ mod io_pro {
 fn main() {
     input!(w: usize);
     let mut v = vec![1, 2];
-    for i in 1..=298 {
-        v.push(4 * i);
-        if w < v[v.len() - 1] {
-            break;
-        }
+    for i in 1..=99 {
+        v.push(i);
+        v.push(i * 100);
+        v.push(i * 10000);
     }
     println!("{}", v.len());
     for i in v.iter() {
