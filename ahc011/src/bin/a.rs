@@ -30,10 +30,10 @@ zero = Some((j as i64,i as i64));
     let mut all_iter = 0;
     let mut count = 0;
 
-    let mut max =(0,vec![]);
+    let mut max =(0,vec![],zero.unwrap());
 
     let mut xs = xs::XorShift::new();
-    while time < 2900 {
+    while time < 500 {
         all_iter += 1;
         if (all_iter & ((1 << 4) - 1)) == 0 {
             time = Instant::now().duration_since(since).as_millis();
@@ -61,12 +61,45 @@ count +=1;
  }
 
  if max.0 <  score{
-     max = (score,a);
+     max = (score,a,(x,y));
  }
     }
-    eprintln!(r#"{}"#, &max.0);
-    eprintln!(r#"{} / {}"#, &count, &all_iter);
-    for c in max.1{
+
+    let mut max2 =(max.0,vec![],max.2);
+    while time < 2900 {
+        all_iter += 1;
+        if (all_iter & ((1 << 4) - 1)) == 0 {
+            time = Instant::now().duration_since(since).as_millis();
+        }
+        let mut a = vec![];
+        let (mut x,mut y) = max.2;
+        for i in 0..20{
+            let mut buff =  xs.next().unwrap() as usize %4;
+            while  !(0..inp.n as i64).contains(&(x+(DI[buff].1).0)) ||  !(0..inp.n as i64).contains(&(y+(DI[buff].1).1))  {
+                buff =  xs.next().unwrap() as usize %4;
+            }
+a.push(             DI[buff].0);
+x +=(DI[buff].1).0;
+y +=(DI[buff].1).1;
+
+ }
+ let (score,_,_) = compute_score(&inp,&max.1.iter().copied().chain(a.iter().copied()).collect::<Vec<_>>());
+ if score != 0{
+count +=1;
+ }else{
+    for c in a.iter(){
+        print!("{}",*c);
+    }
+    println!("{} {}",x,y);return ;
+ }
+
+ if max2.0 <  score{
+    max2 = (score,a,(x,y));
+ }
+    }
+    eprintln!(r#"{}"#, &max2.0);
+    //eprintln!(r#"{} / {}"#, &count, &all_iter);
+    for c in max.1.iter().chain(max2.1.iter()){
         print!("{}",c)
     }
     println!();
