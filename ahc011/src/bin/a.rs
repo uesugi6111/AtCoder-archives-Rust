@@ -33,111 +33,51 @@ fn main() {
 
     let mut max = (0, vec![], zero.unwrap());
 
+    //let mut ans = vec![];
     let mut xs = xs::XorShift::new();
-    while time < 500 {
-        all_iter += 1;
-        if (all_iter & ((1 << 4) - 1)) == 0 {
-            time = Instant::now().duration_since(since).as_millis();
-        }
-        let mut a = vec![];
-        let (mut x, mut y) = zero.unwrap();
-        for i in 0..20 {
-            let mut buff = xs.next().unwrap() as usize % 4;
-            while !(0..inp.n as i64).contains(&(x + (DI[buff].1).0))
-                || !(0..inp.n as i64).contains(&(y + (DI[buff].1).1))
-            {
-                buff = xs.next().unwrap() as usize % 4;
+const it:[u128;4] = [500,2000,2500,2960];
+const CCC:[usize;4] = [40,50,20,10];
+    for i in 0..it.len(){
+        let mut max2 = (max.0,vec![],max.2);
+        while time < it[i] {
+            all_iter += 1;
+            if (all_iter & ((1 << 4) - 1)) == 0 {
+                time = Instant::now().duration_since(since).as_millis();
             }
-            a.push(DI[buff].0);
-            x += (DI[buff].1).0;
-            y += (DI[buff].1).1;
-        }
-        let (score, _, _) = compute_score(&inp, &a);
-
-        if max.0 < score {
-            max = (score, a, (x, y));
-        }
-    }
-
-    let mut max2 = (max.0, vec![], max.2);
-    while time < 900 {
-        all_iter += 1;
-        if (all_iter & ((1 << 4) - 1)) == 0 {
-            time = Instant::now().duration_since(since).as_millis();
-        }
-        let mut a = vec![];
-        let (mut x, mut y) = max.2;
-        for i in 0..20 {
-            let mut buff = xs.next().unwrap() as usize % 4;
-            while !(0..inp.n as i64).contains(&(x + (DI[buff].1).0))
-                || !(0..inp.n as i64).contains(&(y + (DI[buff].1).1))
-            {
-                buff = xs.next().unwrap() as usize % 4;
+            let mut a = vec![];
+            let (mut x, mut y) = zero.unwrap();
+            for i in 0..CCC[i as usize] {
+                let mut buff = xs.next().unwrap() as usize % 4;
+                while !(0..inp.n as i64).contains(&(x + (DI[buff].1).0))
+                    || !(0..inp.n as i64).contains(&(y + (DI[buff].1).1))
+                {
+                    buff = xs.next().unwrap() as usize % 4;
+                }
+                a.push(DI[buff].0);
+                x += (DI[buff].1).0;
+                y += (DI[buff].1).1;
             }
-            a.push(DI[buff].0);
-            x += (DI[buff].1).0;
-            y += (DI[buff].1).1;
-        }
-        let (score, _, _) = compute_score(
-            &inp,
-            &max.1
-                .iter()
-                .copied()
-                .chain(a.iter().copied())
-                .collect::<Vec<_>>(),
-        );
+            let (score, _, _) = if i == 0
+                                        {compute_score2(&inp, &max.1.iter().copied().chain(a.iter().copied()).collect::<Vec<_>>())}
+                                    else{ compute_score(&inp, &max.1.iter().copied().chain(a.iter().copied()).collect::<Vec<_>>())};
 
-        if max2.0 < score {
-            max2 = (score, a, (x, y));
-        }
-    }
-
-    max2.1 = max
-        .1
-        .iter()
-        .copied()
-        .chain(max2.1.iter().copied())
-        .collect::<Vec<_>>();
-
-    let mut max3 = (max.0, vec![], max.2);
-    while time < 2900 {
-        all_iter += 1;
-        if (all_iter & ((1 << 4) - 1)) == 0 {
-            time = Instant::now().duration_since(since).as_millis();
-        }
-        let mut a = vec![];
-        let (mut x, mut y) = max2.2;
-        for i in 0..20 {
-            let mut buff = xs.next().unwrap() as usize % 4;
-            while !(0..inp.n as i64).contains(&(x + (DI[buff].1).0))
-                || !(0..inp.n as i64).contains(&(y + (DI[buff].1).1))
-            {
-                buff = xs.next().unwrap() as usize % 4;
+            if max2.0 < score {
+                max2 = (score, a, (x, y));
             }
-            a.push(DI[buff].0);
-            x += (DI[buff].1).0;
-            y += (DI[buff].1).1;
         }
-        let (score, _, _) = compute_score(
-            &inp,
-            &max2
-                .1
-                .iter()
-                .copied()
-                .chain(a.iter().copied())
-                .collect::<Vec<_>>(),
-        );
+        if max.1.len()+max2.1.len() > inp.T{
+            break;
+        }
+        max = (max2.0,max.1.iter().copied().chain(max2.1.iter().copied()).collect::<Vec<_>>(),max2.2);
+    }
 
-        if max3.0 < score {
-            max3 = (score, a, (x, y));
-        }
-    }
-    eprintln!(r#"{}"#, &max3.0);
-    //eprintln!(r#"{} / {}"#, &count, &all_iter);
-    for c in max2.1.iter().chain(max3.1.iter()) {
-        print!("{}", c)
-    }
-    println!();
+
+
+
+    eprintln!(r#"{}"#, &max.0);
+    eprintln!(r#"{} / {}"#, &count, &all_iter);
+     
+    println!("{}",max.1.iter().collect::<String>());
 }
 
 pub trait SetMinMax {
@@ -310,7 +250,7 @@ impl Sim {
             Err(format!("illegal move: {} (turn {})", c, self.turn))
         }
     }
-    pub fn compute_score(&self, input: &Input) -> (i64, String, Vec<Vec<bool>>) {
+    pub fn compute_score(&self, input: &Input) -> (i64,i64, String, Vec<Vec<bool>>) {
         let mut uf = UnionFind::new(self.n * self.n);
         let mut tree = vec![true; self.n * self.n];
         let mut tiles = mat![0; self.n; self.n];
@@ -364,7 +304,7 @@ impl Sim {
             }
         }
         if self.turn > self.T {
-            return (0, format!("too many moves"), bs);
+            return (0, 0,format!("too many moves"), bs);
         }
         let size = if max_tree == !0 { 0 } else { uf.size(max_tree) };
         let score = if size == self.n * self.n - 1 {
@@ -372,7 +312,23 @@ impl Sim {
         } else {
             (500000.0 * size as f64 / (self.n * self.n - 1) as f64).round()
         } as i64;
-        (score, String::new(), bs)
+
+        let mut minus=0;
+        for i in 0..self.n{
+            if tiles[0][i] & 2==2{
+                minus+=1;
+            }
+            if tiles[self.n-1][i] & 8==8{
+                minus+=1;
+            }
+            if tiles[i][0] & 1==1{
+                minus+=1;
+            }
+            if tiles[i][self.n-1] & 4==4{
+                minus+=1;
+            }
+        }
+        (score,minus, String::new(), bs)
     }
 }
 
@@ -383,11 +339,24 @@ pub fn compute_score(
     let mut sim = Sim::new(input);
     for &c in out {
         if let Err(err) = sim.apply(c) {
-            return (0, err, (sim.from.clone(), sim.compute_score(input).2));
+            return (0, err, (sim.from.clone(), sim.compute_score(input).3));
         }
     }
-    let (score, err, tree) = sim.compute_score(input);
+    let (score,m, err, tree) = sim.compute_score(input);
     (score, err, (sim.from.clone(), tree))
+}
+pub fn compute_score2(
+    input: &Input,
+    out: &[char],
+) -> (i64, String, (Vec<Vec<(usize, usize)>>, Vec<Vec<bool>>)) {
+    let mut sim = Sim::new(input);
+    for &c in out {
+        if let Err(err) = sim.apply(c) {
+            return (0, err, (sim.from.clone(), sim.compute_score(input).3));
+        }
+    }
+    let (score,m, err, tree) = sim.compute_score(input);
+    (1000-m, err, (sim.from.clone(), tree))
 }
 
 mod xs {
