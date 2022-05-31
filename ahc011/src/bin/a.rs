@@ -35,7 +35,7 @@ fn main() {
 
     //let mut ans = vec![];
     let mut xs = xs::XorShift::new();
-    const it: [u128; 4] = [50, 1000, 2000, 2960];
+    const it: [u128; 4] = [50, 500, 1000, 2960];
     const CCC: [usize; 4] = [20, 20, 20, 20];
     for i in 0..it.len() {
         let mut max2 = (max.0, vec![], max.2);
