@@ -26,7 +26,7 @@
         "workbench.iconTheme": "vscode-icons",
         "[rust]": {
             "editor.formatOnSave": true,
-            "editor.defaultFormatter": "matklad.rust-analyzer",
+            "editor.defaultFormatter": "rust-lang.rust-analyzer",
             "editor.tabSize": 4
         },
         "editor.formatOnSave": true,
@@ -45,6 +45,6 @@
         "bungcip.better-toml",
         "vadimcn.vscode-lldb",
         "mutantdino.resourcemonitor",
-        "matklad.rust-analyzer"
-    ],
+        "rust-lang.rust-analyzer"
+    ]
 }
