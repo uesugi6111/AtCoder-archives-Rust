@@ -11,6 +11,42 @@ mod io_pro {
 }
 #[proconio::fastout]
 fn main() {
-    input!(n: usize);
-    println!("Yes");
+    input!(w: i64,h:i64,n:usize,pq:[(i64,i64);n],aa:usize,mut a:[i64;aa],bb:usize,mut b:[i64;bb]);
+    a.push(0);
+    a.push(w);
+    b.push(0);
+    b.push(h);
+    let aaa = a
+        .iter()
+        .copied()
+        .collect::<std::collections::BTreeSet<i64>>();
+    let bbb = b
+        .iter()
+        .copied()
+        .collect::<std::collections::BTreeSet<i64>>();
+
+    let mut map = std::collections::HashMap::new();
+    for (p, q) in pq {
+        let pp = aaa.range(p..).next().unwrap();
+        let qq = bbb.range(q..).next().unwrap();
+        *map.entry(pp)
+            .or_insert_with(std::collections::HashMap::new)
+            .entry(qq)
+            .or_default() += 1;
+    }
+
+    let mut min = n;
+    let mut max = 0;
+    let mut count = 0;
+    for (k, v) in map {
+        for (kk, vv) in v {
+            count += 1;
+            min = min.min(vv);
+            max = max.max(vv);
+        }
+    }
+    if count < (a.len() - 1) * (b.len() - 1) {
+        min = 0;
+    }
+    println!("{} {}", min, max);
 }
